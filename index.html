@@ -40,8 +40,8 @@
             margin-bottom: 20px;
         }
         .card {
-            width: 300px;
-            height: 450px;
+            width: 400px;
+            height: 650px;
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.8s ease-in-out;
@@ -67,7 +67,7 @@
         .card-front {
             background: linear-gradient(45deg, #ff6b6b, #feca57);
             color: white;
-            font-size: 1.5em;
+            font-size: 1em;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         }
@@ -123,7 +123,7 @@
 <body>
     <h1>Rút Bài Xem Quẻ Kinh Dịch</h1>
     <div class="warning">Hãy suy nghĩ đặt câu hỏi kỹ khi rút bài, kết quả chỉ tính lá đầu tiên rút. </div>
-    <div class="warning">Tránh các câu hỏi mang tính trắc nghiệm (Có, không)</div>
+    <div class="warning">Tránh các câu hỏi mang tính trắc nghiệm (Có, không) </div>
     <div class="card-container">
         <div class="card" id="card">
             <div class="card-front">Rút Bài</div>
@@ -140,392 +140,391 @@
     <div class="timer" id="timer">---</div>
 
     <script>
-        const giaiThichQue = new Map([
-            ["THUẦN CÀN", { 
-                soThuTu: 1, 
-                yNghia: "Sáng tạo, mạnh mẽ, trời", 
-                tho: "Trời ôm trời, cao cả thành\nLàm cha Nguyên, Lợi, Trinh, Hanh, mạnh cường.", 
-                giaiThich: "Quẻ Thuần Càn tượng trưng cho trời, biểu thị sự sáng tạo, mạnh mẽ và quyền lực tối cao. Đây là quẻ của sự khởi đầu, khuyến khích hành động quyết đoán, chính trực và bền bỉ. Người nhận quẻ này nên giữ vững đạo đức, hành động đúng đắn để đạt được thành công lớn."
-            }],
-            ["THUẦN KHÔN", { 
-                soThuTu: 2, 
-                yNghia: "Tiếp nhận, nhu thuận, đất", 
-                tho: "Đất ôm đất, mẹ yêu cha\nBao dung, nhu thuận, thái hòa, sinh nuôi.", 
-                giaiThich: "Quẻ Thuần Khôn tượng trưng cho đất, biểu thị sự bao dung, nhu thuận và nuôi dưỡng. Đây là quẻ của sự tiếp nhận, khuyến khích sự kiên nhẫn, khiêm tốn và hỗ trợ người khác. Người nhận quẻ này nên học cách nhẫn nại và làm việc vì lợi ích chung."
-            }],
-            ["THỦY LÔI TRUÂN", { 
-                soThuTu: 3, 
-                yNghia: "Khởi đầu khó khăn", 
-                tho: "Nước trên sấm lắm gian truân\nMưa to tạnh, có ân nhân giúp đời.", 
-                giaiThich: "Quẻ Thủy Lôi Truân biểu thị sự khó khăn ban đầu, như mầm non mới nhú gặp mưa sấm. Dù khó khăn, nhưng nếu kiên trì và có sự giúp đỡ từ người khác, bạn sẽ vượt qua và phát triển. Hãy kiên nhẫn và tìm kiếm sự hỗ trợ."
-            }],
-            ["SƠN THỦY MÔNG", { 
-                soThuTu: 4, 
-                yNghia: "Non trẻ, ngu muội", 
-                tho: "Âm u thủy khởi sơn đầu\nNâng khơi chính đạo, sông sâu núi dài.", 
-                giaiThich: "Quẻ Sơn Thủy Mông biểu thị sự non trẻ, chưa hiểu biết, như dòng nước chảy dưới núi. Đây là thời điểm cần học hỏi, tìm kiếm sự hướng dẫn từ người đi trước để khai sáng con đường chính đạo. Hãy khiêm tốn và cầu tiến."
-            }],
-            ["THỦY THIÊN NHU", { 
-                soThuTu: 5, 
-                yNghia: "Kiên nhẫn chờ đợi", 
-                tho: "Nước đang đổ xuống đầu trời\nThiện kiên nhẫn đợi, thiên thời dành cho.", 
-                giaiThich: "Quẻ Thủy Thiên Nhu biểu thị sự chờ đợi thời cơ, như nước trên trời chưa thể rơi ngay. Đây là lời khuyên về sự kiên nhẫn, chờ đợi đúng thời điểm để hành động. Hãy giữ vững niềm tin và chuẩn bị kỹ lưỡng."
-            }],
-            ["THIÊN THỦY TỤNG", { 
-                soThuTu: 6, 
-                yNghia: "Tranh chấp, kiện tụng", 
-                tho: "Thấp cao, to nhỏ khó hòa\nTranh nhau, kiện tụng bỏ qua ắt thành.", 
-                giaiThich: "Quẻ Thiên Thủy Tụng biểu thị sự tranh chấp, mâu thuẫn, như trời và nước không hòa hợp. Để vượt qua, cần tránh đối đầu trực diện, tìm cách hòa giải và nhượng bộ. Hãy giữ tâm bình thản để giải quyết vấn đề."
-            }],
-            ["ĐỊA THỦY SƯ", { 
-                soThuTu: 7, 
-                yNghia: "Quân đội, kỷ luật", 
-                tho: "Đất ngăn nước tạo nên hồ\nRa quân trị thủy để cho dân giàu.", 
-                giaiThich: "Quẻ Địa Thủy Sư biểu thị sự đoàn kết và kỷ luật, như quân đội được tổ chức chặt chẽ. Đây là thời điểm cần sự lãnh đạo sáng suốt và tinh thần tập thể để vượt qua khó khăn. Hãy hành động có kế hoạch và trật tự."
-            }],
-            ["THỦY ĐỊA TỈ", { 
-                soThuTu: 8, 
-                yNghia: "Đoàn kết, hòa hợp", 
-                tho: "Nước trên đất dưới bùn đen\nGiao hòa đất nước nuôi sen cho đời.", 
-                giaiThich: "Quẻ Thủy Địa Tỉ biểu thị sự hòa hợp, như nước và đất cùng nuôi dưỡng sự sống. Đây là quẻ của sự đoàn kết, khuyến khích sự hợp tác và hỗ trợ lẫn nhau. Hãy xây dựng mối quan hệ tốt đẹp để cùng phát triển."
-            }],
-            ["PHONG THIÊN TIỂU SÚC", { 
-                soThuTu: 9, 
-                yNghia: "Tích lũy nhỏ", 
-                tho: "Hiu hiu gió thổi đầu trời\nGió nuôi mát mẻ, chớ nuôi bão bùng.", 
-                giaiThich: "Quẻ Phong Thiên Tiểu Súc biểu thị sự tích lũy từng chút một, như gió nhẹ thổi trên trời. Đây là lời khuyên về sự kiên trì, tích lũy dần dần để đạt được thành công. Tránh hành động vội vàng, hãy giữ sự ổn định."
-            }],
-            ["THIÊN TRẠCH LÝ", { 
-                soThuTu: 10, 
-                yNghia: "Cẩn trọng, bước đi", 
-                tho: "Đạo trời, thấp dưới cao trên\nSửa mình cho đúng ắt nên người hiền.", 
-                giaiThich: "Quẻ Thiên Trạch Lý biểu thị sự cẩn trọng trong hành động, như đi trên mặt đầm mỏng manh dưới trời cao. Đây là lời khuyên về việc giữ đạo đức, hành động đúng đắn và cẩn thận để tránh sai lầm."
-            }],
-            ["ĐỊA THIÊN THÁI", { 
-                soThuTu: 11, 
-                yNghia: "Thái bình, thông suốt", 
-                tho: "Thái hòa mọi vật sinh sôi\nGiáng khí đất, thăng khí trời Càn Khôn.", 
-                giaiThich: "Quẻ Địa Thiên Thái biểu thị sự thái bình, thông suốt, như đất và trời giao hòa. Đây là quẻ tốt, báo hiệu thời kỳ thịnh vượng, mọi việc thuận lợi. Hãy tận dụng thời cơ để phát triển và lan tỏa điều tốt đẹp."
-            }],
-            ["THIÊN ĐỊA BỈ", { 
-                soThuTu: 12, 
-                yNghia: "Bế tắc, đình trệ", 
-                tho: "Trời đất bất trắc, bất hòa\nNắm ngay cơ hội vượt qua thời này.", 
-                giaiThich: "Quẻ Thiên Địa Bĩ biểu thị sự bế tắc, như trời và đất không giao hòa. Đây là thời điểm khó khăn, cần kiên nhẫn và tìm cơ hội để vượt qua. Hãy giữ vững niềm tin và hành động đúng thời điểm."
-            }],
-            ["THIÊN HỎA ĐỒNG NHÂN", { 
-                soThuTu: 13, 
-                yNghia: "Đồng lòng, hợp tác", 
-                tho: "Lửa sáng, trời sáng chung lòng\nTrung trinh, chính nghĩa cộng đồng mới đông.", 
-                giaiThich: "Quẻ Thiên Hỏa Đồng Nhân biểu thị sự hợp tác, như lửa và trời cùng chiếu sáng. Đây là quẻ khuyến khích sự đoàn kết, làm việc vì lợi ích chung. Hãy giữ tâm trung thực và chính nghĩa để thu hút sự ủng hộ."
-            }],
-            ["HỎA THIÊN ĐẠI HỮU", { 
-                soThuTu: 14, 
-                yNghia: "Sở hữu lớn", 
-                tho: "Lửa trời chiếu sáng nơi nơi\nCủa quý nhất đời hạnh phúc, văn minh.", 
-                giaiThich: "Quẻ Hỏa Thiên Đại Hữu biểu thị sự sở hữu lớn, như lửa trên trời chiếu sáng mọi nơi. Đây là quẻ tốt, báo hiệu sự thành công, thịnh vượng và hạnh phúc. Hãy sử dụng tài sản và thành tựu để làm điều tốt đẹp."
-            }],
-            ["ĐỊA SƠN KHIÊM", { 
-                soThuTu: 15, 
-                yNghia: "Khiêm tốn, nhún nhường", 
-                tho: "Núi dưới đất thấp, càng cao\nĐạo trời đất dẫn ta vào với Khiêm.", 
-                giaiThich: "Quẻ Địa Sơn Khiêm biểu thị sự khiêm tốn, như núi nằm dưới đất. Đây là lời khuyên về việc giữ thái độ nhún nhường, không kiêu ngạo, để đạt được sự tôn trọng và thành công lâu dài."
-            }],
-            ["LÔI ĐỊA DỰ", { 
-                soThuTu: 16, 
-                yNghia: "Vui vẻ, chuẩn bị", 
-                tho: "Sấm vang dậy đất vui mừng\nGiữ mình, vô độ thì đừng, sáng khôn.", 
-                giaiThich: "Quẻ Lôi Địa Dự biểu thị sự vui vẻ và chuẩn bị, như sấm vang trên đất. Đây là thời điểm thuận lợi để chuẩn bị cho những kế hoạch lớn. Hãy giữ tâm trạng lạc quan nhưng tránh phóng túng."
-            }],
-            ["TRẠCH LÔI TÙY", { 
-                soThuTu: 17, 
-                yNghia: "Tùy tùng, thích ứng", 
-                tho: "Sấm trong đầm sóng vui rung\nCùng theo chính đạo thì cùng hanh thông.", 
-                giaiThich: "Quẻ Trạch Lôi Tùy biểu thị sự thích ứng, như sấm vang trong đầm. Đây là lời khuyên về việc linh hoạt, biết theo đúng người và đúng đạo để đạt được thành công. Hãy giữ tâm chính trực."
-            }],
-            ["SƠN PHONG CỔ", { 
-                soThuTu: 18, 
-                yNghia: "Sửa chữa, đổi mới", 
-                tho: "Núi ngăn gió có việc rồi\nSửa mình chân chính xứng người sáng khôn.", 
-                giaiThich: "Quẻ Sơn Phong Cổ biểu thị sự sửa chữa, như núi ngăn gió để làm mới. Đây là thời điểm cần sửa đổi những sai lầm, làm mới bản thân và môi trường xung quanh. Hãy hành động chân chính."
-            }],
-            ["ĐỊA TRẠCH LÂM", { 
-                soThuTu: 19, 
-                yNghia: "Đến gần, phát triển", 
-                tho: "Đất trên đầm đến với nuôi\nNuôi là đạo lớn nhất đời người theo.", 
-                giaiThich: "Quẻ Địa Trạch Lâm biểu thị sự phát triển, như đất đến gần đầm để nuôi dưỡng. Đây là quẻ tốt, báo hiệu sự tiến triển và thành công. Hãy tận dụng thời cơ để phát triển và giúp đỡ người khác."
-            }],
-            ["PHONG ĐỊA QUAN", { 
-                soThuTu: 20, 
-                yNghia: "Quan sát, xem xét", 
-                tho: "Gió trên đất tất theo phương\nGió có mắt dắt dẫn đường mát thơm.", 
-                giaiThich: "Quẻ Phong Địa Quan biểu thị sự quan sát, như gió thổi trên đất. Đây là lời khuyên về việc nhìn nhận, học hỏi và dẫn dắt người khác bằng tấm gương sáng. Hãy giữ tâm trong sạch và sáng suốt."
-            }],
-            ["HỎA LÔI PHỆ HẠP", { 
-                soThuTu: 21, 
-                yNghia: "Gặp trở ngại, cần vượt qua", 
-                tho: "Trừ ngăn cách, sạch gian tà\nLửa trên đầu sấm hợp hòa sáng vang.", 
-                giaiThich: "Quẻ Hỏa Lôi Phệ Hạp biểu thị sự vượt qua trở ngại, như lửa và sấm hợp sức. Đây là thời điểm cần quyết đoán, loại bỏ những cản trở để tiến lên. Hãy hành động mạnh mẽ và công bằng."
-            }],
-            ["SƠN HỎA BÍ", { 
-                soThuTu: 22, 
-                yNghia: "Trang sức, vẻ đẹp bề ngoài", 
-                tho: "Lửa làm cho núi sáng hơn\nĐiểm trang lợi ít, lòng son lợi nhiều.", 
-                giaiThich: "Quẻ Sơn Hỏa Bí biểu thị vẻ đẹp bề ngoài, như lửa làm sáng núi. Đây là lời khuyên về việc chú trọng vẻ đẹp nội tâm hơn là hình thức bên ngoài. Hãy giữ tâm chân thành để đạt được thành công thực sự."
-            }],
-            ["SƠN ĐỊA BÁC", { 
-                soThuTu: 23, 
-                yNghia: "Bóc lột, suy tàn", 
-                tho: "Núi trên đất tất tiêu điều\nKhi trên nền yếu, khi kiêu căng đời.", 
-                giaiThich: "Quẻ Sơn Địa Bác biểu thị sự suy tàn, như núi trên đất không vững. Đây là thời điểm cần cẩn trọng, tránh kiêu ngạo và xây dựng nền tảng vững chắc để tránh thất bại."
-            }],
-            ["ĐỊA LÔI PHỤC", { 
-                soThuTu: 24, 
-                yNghia: "Trở lại, phục hồi", 
-                tho: "Sấm trong đất tất vui hồi\nĐất nuôi mầm hạnh thành chồi mai xanh.", 
-                giaiThich: "Quẻ Địa Lôi Phục biểu thị sự phục hồi, như sấm vang trong đất báo hiệu mùa xuân. Đây là quẻ tốt, báo hiệu sự trở lại của những điều tốt đẹp. Hãy kiên nhẫn và chuẩn bị cho sự khởi sắc."
-            }],
-            ["THIÊN LÔI VÔ VỌNG", { 
-                soThuTu: 25, 
-                yNghia: "Vô tư, chân thật", 
-                tho: "Trời nổi sấm có thiên tai\nTrời cưng nhân đức, phạt ai làm càn.", 
-                giaiThich: "Quẻ Thiên Lôi Vô Vọng biểu thị sự chân thật, như sấm vang dưới trời. Đây là lời khuyên về việc sống ngay thẳng, không toan tính. Tránh hành động sai trái để không gặp tai họa."
-            }],
-            ["SƠN THIÊN ĐẠI SÚC", { 
-                soThuTu: 26, 
-                yNghia: "Tích lũy lớn", 
-                tho: "Núi chứa trời, chứa lớn lao\nTu nhân tích đức ắt cao cả thành.", 
-                giaiThich: "Quẻ Sơn Thiên Đại Súc biểu thị sự tích lũy lớn, như núi chứa trời. Đây là lời khuyên về việc tích lũy tri thức, đạo đức và tài năng để đạt được thành công lớn. Hãy kiên trì và chăm chỉ."
-            }],
-            ["SƠN LÔI DI", { 
-                soThuTu: 27, 
-                yNghia: "Nuôi dưỡng, cung cấp", 
-                tho: "Núi nuôi sấm động lòng mình\nNgười nuôi đức hạnh, nghĩa tình người minh.", 
-                giaiThich: "Quẻ Sơn Lôi Di biểu thị sự nuôi dưỡng, như núi nuôi sấm. Đây là lời khuyên về việc chăm sóc bản thân và người khác, cả về vật chất lẫn tinh thần. Hãy nuôi dưỡng đức hạnh để trở thành người sáng suốt."
-            }],
-            ["TRẠCH PHONG ĐẠI QUÁ", { 
-                soThuTu: 28, 
-                yNghia: "Quá tải, trách nhiệm nặng nề", 
-                tho: "Quá đáng giáng họa lẽ thường\nĐức cao, nhân cả phi thường làm nên.", 
-                giaiThich: "Quẻ Trạch Phong Đại Quá biểu thị sự quá tải, như đầm chịu sức gió lớn. Đây là thời điểm cần cẩn trọng, tránh tham lam và hành động vượt quá khả năng. Hãy giữ đức cao để vượt qua khó khăn."
-            }],
-            ["THUẦN KHẢM", { 
-                soThuTu: 29, 
-                yNghia: "Nước, hiểm trở", 
-                tho: "Nước hai lần hiểm cản tà\nHiền tài nhân đức vượt qua dễ dàng.", 
-                giaiThich: "Quẻ Thuần Khảm biểu thị sự hiểm nguy, như nước chảy xiết. Đây là quẻ nhắc nhở về việc đối mặt với khó khăn, nhưng nếu giữ tâm chính trực và nhân đức, bạn sẽ vượt qua một cách an toàn."
-            }],
-            ["THUẦN LI", { 
-                soThuTu: 30, 
-                yNghia: "Lửa, sáng suốt", 
-                tho: "Hai Li sáng quá hóa mờ\nChẳng ai thích kẻ hay phô trương nhiều.", 
-                giaiThich: "Quẻ Thuần Li biểu thị sự sáng suốt, như lửa rực rỡ. Tuy nhiên, nếu quá phô trương sẽ gây phản tác dụng. Đây là lời khuyên về việc giữ sự khiêm tốn, sử dụng trí tuệ một cách đúng đắn."
-            }],
-            ["TRẠCH SƠN HÀM", { 
-                soThuTu: 31, 
-                yNghia: "Cảm ứng, giao tiếp", 
-                tho: "Đầm trên đầu núi thơ nhiều\nTình yêu cao thượng, tình yêu lâu dài.", 
-                giaiThich: "Quẻ Trạch Sơn Hàm biểu thị sự cảm ứng, như đầm và núi giao hòa. Đây là quẻ tốt cho tình cảm, khuyến khích sự chân thành và giao tiếp sâu sắc để xây dựng mối quan hệ bền vững."
-            }],
-            ["LÔI PHONG HẰNG", { 
-                soThuTu: 32, 
-                yNghia: "Bền bỉ, kiên trì", 
-                tho: "Vĩnh hằng sấm có gió trong\nVĩnh hằng tình vợ, nghĩa chồng trời xe.", 
-                giaiThich: "Quẻ Lôi Phong Hằng biểu thị sự bền bỉ, như sấm và gió hỗ trợ nhau. Đây là quẻ tốt cho sự ổn định, khuyến khích sự kiên định trong tình cảm và công việc. Hãy giữ vững cam kết để thành công."
-            }],
-            ["THIÊN SƠN ĐỘN", { 
-                soThuTu: 33, 
-                yNghia: "Rút lui, ẩn dật", 
-                tho: "Núi khiêm núi trốn trong trời\nGiữ mình vững chãi thì đời núi cao.", 
-                giaiThich: "Quẻ Thiên Sơn Độn biểu thị sự rút lui, như núi ẩn dưới trời. Đây là lời khuyên về việc tạm thời tránh xa tranh chấp, giữ mình trong sạch để bảo toàn lực lượng và chờ thời cơ."
-            }],
-            ["LÔI THIÊN ĐẠI TRÁNG", { 
-                soThuTu: 34, 
-                yNghia: "Mạnh mẽ, quyết đoán", 
-                tho: "Sấm trên trời vọng xa xôi\nLớn mạnh tránh ác thì đời hanh thông.", 
-                giaiThich: "Quẻ Lôi Thiên Đại Tráng biểu thị sự mạnh mẽ, như sấm vang trên trời. Đây là thời điểm thuận lợi để hành động quyết đoán, nhưng cần tránh làm điều ác để giữ được sự hanh thông."
-            }],
-            ["HỎA ĐỊA TẤN", { 
-                soThuTu: 35, 
-                yNghia: "Tiến lên, phát triển", 
-                tho: "Lửa trên đất tất sáng ngời\nĐức nhân tiến có mặt trời tâm soi.", 
-                giaiThich: "Quẻ Hỏa Địa Tấn biểu thị sự tiến lên, như lửa chiếu sáng trên đất. Đây là quẻ tốt, báo hiệu sự phát triển và thành công. Hãy giữ tâm sáng và hành động nhân đức để tiến xa."
-            }],
-            ["ĐỊA HỎA MINH DI", { 
-                soThuTu: 36, 
-                yNghia: "Tối tăm, ẩn mình", 
-                tho: "Lửa trong đất tất tối đi\nGiữ cho tâm sáng, Minh Di sá gì.", 
-                giaiThich: "Quẻ Địa Hỏa Minh Di biểu thị sự tối tăm, như lửa bị đất che khuất. Đây là thời điểm cần ẩn mình, giữ tâm sáng và tránh phô trương để bảo vệ bản thân trước khó khăn."
-            }],
-            ["PHONG HỎA GIA NHÂN", { 
-                soThuTu: 37, 
-                yNghia: "Gia đình, trật tự", 
-                tho: "Lửa có gió tựa, người nhà\nNên lửa cháy lớn sáng lòa không gian.", 
-                giaiThich: "Quẻ Phong Hỏa Gia Nhân biểu thị sự hòa thuận trong gia đình, như gió giúp lửa cháy sáng. Đây là quẻ tốt, khuyến khích sự trật tự và yêu thương trong gia đình để đạt được hạnh phúc."
-            }],
-            ["HỎA TRẠCH KHUÊ", { 
-                soThuTu: 38, 
-                yNghia: "Đối lập, xung đột", 
-                tho: "Đầm dưới lửa tựa vào nhau\nChị em đối đầu nhưng vẫn chị em.", 
-                giaiThich: "Quẻ Hỏa Trạch Khuê biểu thị sự đối lập, như lửa và đầm không hòa hợp. Đây là thời điểm có mâu thuẫn, nhưng cần giữ tình thân và tìm cách hòa giải để vượt qua."
-            }],
-            ["THỦY SƠN KIỂN", { 
-                soThuTu: 39, 
-                yNghia: "Trở ngại, khó khăn", 
-                tho: "Núi sau nước trước gian nan\nVượt qua khi đủ bền gan, đức tài.", 
-                giaiThich: "Quẻ Thủy Sơn Kiển biểu thị sự khó khăn, như nước chảy trước núi. Đây là thời điểm cần kiên nhẫn, bền bỉ và sử dụng trí tuệ để vượt qua trở ngại. Hãy giữ vững đạo đức."
-            }],
-            ["LÔI THỦY GIẢI", { 
-                soThuTu: 40, 
-                yNghia: "Giải tỏa, cởi bỏ", 
-                tho: "Sấm trên nước được giải nguy\nNguy tan, chăm sóc dân vì ấm no.", 
-                giaiThich: "Quẻ Lôi Thủy Giải biểu thị sự giải tỏa, như sấm làm tan nguy hiểm trên nước. Đây là quẻ tốt, báo hiệu sự kết thúc khó khăn. Hãy tận dụng thời cơ để chăm sóc và xây dựng lại."
-            }],
-            ["SƠN TRẠCH TỔN", { 
-                soThuTu: 41, 
-                yNghia: "Giảm bớt, tổn thất", 
-                tho: "Đất đầm tổn đắp núi cao\nGiảm đi tính xấu khác nào tốt tăng.", 
-                giaiThich: "Quẻ Sơn Trạch Tổn biểu thị sự giảm bớt, như đầm làm tổn đất để đắp núi. Đây là lời khuyên về việc hy sinh những điều không cần thiết để đạt được điều lớn lao hơn. Hãy bỏ bớt cái xấu để tăng cái tốt."
-            }],
-            ["PHONG LÔI ÍCH", { 
-                soThuTu: 42, 
-                yNghia: "Tăng trưởng, lợi ích", 
-                tho: "Sấm gió giúp ích cho nhau\nCao ham giúp thấp, cao mau hơn nhiều.", 
-                giaiThich: "Quẻ Phong Lôi Ích biểu thị sự tăng trưởng, như sấm và gió hỗ trợ nhau. Đây là quẻ tốt, khuyến khích sự giúp đỡ lẫn nhau để cùng phát triển. Hãy hành động vì lợi ích chung."
-            }],
-            ["TRẠCH THIÊN QUẢI", { 
-                soThuTu: 43, 
-                yNghia: "Quyết đoán, dứt khoát", 
-                tho: "Đầm trời vỡ mọi đê ngăn\nKiên tâm tiến dưới trời dân tất thành.", 
-                giaiThich: "Quẻ Trạch Thiên Quải biểu thị sự quyết đoán, như đầm phá vỡ đê dưới trời. Đây là thời điểm cần hành động mạnh mẽ, dứt khoát để loại bỏ trở ngại. Hãy giữ tâm kiên định để thành công."
-            }],
-            ["THIÊN PHONG CẤU", { 
-                soThuTu: 44, 
-                yNghia: "Gặp gỡ bất ngờ", 
-                tho: "Gió kết trời thổi mọi phương\nDưới trên liên kết tỏa hương thơm đời.", 
-                giaiThich: "Quẻ Thiên Phong Cấu biểu thị sự gặp gỡ bất ngờ, như gió thổi dưới trời. Đây là quẻ nhắc nhở về việc cẩn trọng với những mối quan hệ mới, nhưng nếu biết tận dụng, sẽ mang lại điều tốt đẹp."
-            }],
-            ["TRẠCH ĐỊA TỤY", { 
-                soThuTu: 45, 
-                yNghia: "Tụ họp, đoàn tụ", 
-                tho: "Đầm trên đất tụ vui hòa\nCó hương thơm ngát của hoa sen đời.", 
-                giaiThich: "Quẻ Trạch Địa Tụy biểu thị sự đoàn tụ, như đầm trên đất tạo nên vẻ đẹp. Đây là quẻ tốt, báo hiệu sự tụ họp vui vẻ và hòa hợp. Hãy trân trọng những mối quan hệ và cơ hội hợp tác."
-            }],
-            ["ĐỊA PHONG THĂNG", { 
-                soThuTu: 46, 
-                yNghia: "Đi lên, thăng tiến", 
-                tho: "Đất trên gió có thăng thiên\nNgày ngày tích đức, người hiền ắt nên.", 
-                giaiThich: "Quẻ Địa Phong Thăng biểu thị sự thăng tiến, như gió nâng đất lên cao. Đây là quẻ tốt, báo hiệu sự phát triển và thành công. Hãy tiếp tục tích đức và làm việc chăm chỉ để tiến xa."
-            }],
-            ["TRẠCH THỦY KHỐN", { 
-                soThuTu: 47, 
-                yNghia: "Khốn đốn, khó khăn", 
-                tho: "Nước dưới đầm có khốn nguy\nTrung trinh vui vẻ sá gì không qua.", 
-                giaiThich: "Quẻ Trạch Thủy Khốn biểu thị sự khó khăn, như nước bị đầm vây hãm. Đây là thời điểm thử thách, nhưng nếu giữ tâm trung trinh và lạc quan, bạn sẽ vượt qua. Hãy kiên nhẫn và giữ vững niềm tin."
-            }],
-            ["THỦY PHONG TỈNH", { 
-                soThuTu: 48, 
-                yNghia: "Giếng nước, nguồn nuôi dưỡng", 
-                tho: "Nước nguồn trời đất, gàu phong\nGiếng lòng đầy ngọc, miệng không nói gì.", 
-                giaiThich: "Quẻ Thủy Phong Tỉnh biểu thị nguồn nuôi dưỡng, như giếng nước trong lành. Đây là quẻ nhắc nhở về việc giữ gìn nguồn lực và chia sẻ với người khác. Hãy làm việc vì lợi ích cộng đồng."
-            }],
-            ["TRẠCH HỎA CÁCH", { 
-                soThuTu: 49, 
-                yNghia: "Thay đổi, cách tân", 
-                tho: "Đầm trên lửa chứa đổi thay\nSáng ngời, vui thuận ắt xây mới thành.", 
-                giaiThich: "Quẻ Trạch Hỏa Cách biểu thị sự thay đổi, như lửa làm sôi nước trong đầm. Đây là thời điểm cần cải cách, thay đổi để tiến bộ. Hãy hành động sáng suốt và thuận theo ý dân để thành công."
-            }],
-            ["HỎA PHONG ĐỈNH", { 
-                soThuTu: 50, 
-                yNghia: "Đỉnh, sự nghiệp vững chắc", 
-                tho: "Lửa có gió, đỉnh sôi liền\nĐức, nhân, hòa, sáng đại hiền chăm dân.", 
-                giaiThich: "Quẻ Hỏa Phong Đỉnh biểu thị sự vững chắc, như cái đỉnh được lửa và gió hỗ trợ. Đây là quẻ tốt, báo hiệu sự nghiệp thành công và ổn định. Hãy giữ đức hạnh và chăm lo cho người khác."
-            }],
-            ["THUẦN CHẤN", { 
-                soThuTu: 51, 
-                yNghia: "Sấm, hành động", 
-                tho: "Sấm sấm chấn động đất trời\nDũng nhân trí giữ, có cười sấm qua.", 
-                giaiThich: "Quẻ Thuần Chấn biểu thị sự hành động, như sấm vang chấn động. Đây là thời điểm cần dũng cảm, quyết đoán để tạo ra thay đổi. Hãy giữ tâm trí sáng suốt để vượt qua thử thách."
-            }],
-            ["THUẦN CẤN", { 
-                soThuTu: 52, 
-                yNghia: "Núi, tĩnh tại", 
-                tho: "Núi chồng núi mới to cao\nTrong lòng ngọc tĩnh, ngăn bao bạo tàn.", 
-                giaiThich: "Quẻ Thuần Cấn biểu thị sự tĩnh tại, như núi đứng vững. Đây là lời khuyên về việc giữ tâm bình thản, tập trung vào nội tâm để tránh bị ảnh hưởng bởi những biến động bên ngoài."
-            }],
-            ["PHONG SƠN TIỆM", { 
-                soThuTu: 53, 
-                yNghia: "Tiến dần, tuần tự", 
-                tho: "Cây trên núi từ từ cao\nNgày ngày tích đức như bao người hiền.", 
-                giaiThich: "Quẻ Phong Sơn Tiệm biểu thị sự tiến triển dần dần, như cây mọc trên núi. Đây là quẻ khuyến khích sự kiên trì, làm việc tuần tự để đạt được thành công lâu dài. Hãy giữ vững đạo đức."
-            }],
-            ["LÔI TRẠCH QUY MUỘI", { 
-                soThuTu: 54, 
-                yNghia: "Cô gái về nhà chồng", 
-                tho: "Thương em gái nhỏ vu quy\nVề với sấm sét lấy gì giữ vui.", 
-                giaiThich: "Quẻ Lôi Trạch Quy Muội biểu thị sự kết hôn không thuận, như cô gái trẻ về nhà chồng gặp sấm sét. Đây là lời cảnh báo về việc cẩn trọng trong các mối quan hệ, tránh vội vàng để không gặp bất lợi."
-            }],
-            ["LÔI HỎA PHONG", { 
-                soThuTu: 55, 
-                yNghia: "Sung mãn, thịnh vượng", 
-                tho: "Sấm động, lửa sáng gặp nhau\nTất nhiên thịnh lớn, chẳng cầu mà nên.", 
-                giaiThich: "Quẻ Lôi Hỏa Phong biểu thị sự thịnh vượng, như sấm và lửa cùng sáng. Đây là quẻ tốt, báo hiệu thời kỳ sung mãn. Tuy nhiên, cần cẩn trọng vì thịnh cực thì suy, hãy chuẩn bị cho tương lai."
-            }],
-            ["HỎA SƠN LỮ", { 
-                soThuTu: 56, 
-                yNghia: "Khách, lữ hành", 
-                tho: "Lửa trên núi, lửa ở nhờ\nGiữ mình cho sáng và thờ cao sơn.", 
-                giaiThich: "Quẻ Hỏa Sơn Lữ biểu thị sự lữ hành, như lửa cháy trên núi. Đây là thời điểm bạn ở vị trí khách, cần giữ tâm sáng và hành động đúng mực để được đón nhận và bảo vệ."
-            }],
-            ["THUẦN TỐN", { 
-                soThuTu: 57, 
-                yNghia: "Gió, nhu thuận", 
-                tho: "Gió gió hòa nhập mạnh lên\nChớ gây bão tố mà nên mát lành.", 
-                giaiThich: "Quẻ Thuần Tốn biểu thị sự nhu thuận, như gió nhẹ thổi. Đây là lời khuyên về việc hành động mềm dẻo, linh hoạt để đạt được mục tiêu. Tránh gây xung đột, hãy giữ sự hòa nhã."
-            }],
-            ["THUẦN ĐOÀI", { 
-                soThuTu: 58, 
-                yNghia: "Đầm, vui vẻ", 
-                tho: "Đoài toàn xinh đẹp, vui tươi\nNuôi hoa sen nở soi đời gương hương.", 
-                giaiThich: "Quẻ Thuần Đoài biểu thị sự vui vẻ, như đầm nước trong lành. Đây là quẻ tốt, báo hiệu niềm vui và sự hòa hợp. Hãy lan tỏa niềm vui và giữ tâm trong sáng để thu hút điều tốt đẹp."
-            }],
-            ["PHONG THỦY HOÁN", { 
-                soThuTu: 59, 
-                yNghia: "Phân tán, ly tán", 
-                tho: "Nước dưới gió có sóng lan\nPhân ra, thuyền Tốn vượt ngàn hiểm nguy.", 
-                giaiThich: "Quẻ Phong Thủy Hoán biểu thị sự phân tán, như gió làm sóng nước lan xa. Đây là thời điểm cần cẩn trọng với sự chia rẽ, nhưng nếu biết tận dụng, có thể vượt qua khó khăn để tiến lên."
-            }],
-            ["THỦY TRẠCH TIẾT", { 
-                soThuTu: 60, 
-                yNghia: "Tiết chế, giới hạn", 
-                tho: "Tiết chế lượng nước trong đầm\nThì sen mới nở hàng năm cho đời.", 
-                giaiThich: "Quẻ Thủy Trạch Tiết biểu thị sự tiết chế, như nước trong đầm được kiểm soát. Đây là lời khuyên về việc đặt giới hạn, không làm quá mức để giữ sự cân bằng và bền vững."
-            }],
-            ["PHONG TRẠCH TRUNG PHU", { 
-                soThuTu: 61, 
-                yNghia: "Trung thực, thành tín", 
-                tho: "Trên đầm gió có đức tin\nHoa sen nở, gió đưa nghìn trùng thơm.", 
-                giaiThich: "Quẻ Phong Trạch Trung Phu biểu thị sự trung thực, như gió thổi trên đầm làm hoa sen tỏa hương. Đây là quẻ khuyến khích sự thành tín, giữ lời hứa để xây dựng lòng tin và thành công."
-            }],
-            ["LÔI SƠN TIỂU QUÁ", { 
-                soThuTu: 62, 
-                yNghia: "Quá nhỏ, sai lệch nhỏ", 
-                tho: "Sấm trên đầu núi, thấp hèn\nHam danh tiếng hảo, nhỏ nhen đen đời.", 
-                giaiThich: "Quẻ Lôi Sơn Tiểu Quá biểu thị sự sai lệch nhỏ, như sấm vang trên núi thấp. Đây là lời cảnh báo về việc tránh tham lam danh tiếng, hãy giữ tâm khiêm tốn và hành động đúng mực."
-            }],
-            ["THỦY HỎA KÝ TẾ", { 
-                soThuTu: 63, 
-                yNghia: "Đã hoàn thành, thành công", 
-                tho: "Nước trên lửa tựa nhau thành\nGiao hòa lửa nước nên hành tinh xanh.", 
-                giaiThich: "Quẻ Thủy Hỏa Ký Tế biểu thị sự hoàn thành, như nước và lửa giao hòa. Đây là quẻ tốt, báo hiệu sự thành công. Tuy nhiên, cần cẩn trọng vì sau khi hoàn thành, dễ sinh ra lơ là."
-            }],
-            ["HỎA THỦY VỊ TẾ", { 
-                soThuTu: 64, 
-                yNghia: "Chưa hoàn thành, còn dang dở", 
-                tho: "Lửa trên nước rước việc đời\nTrong trời đất cứ luân hồi hóa sinh.", 
-                giaiThich: "Quẻ Hỏa Thủy Vị Tế biểu thị sự chưa hoàn thành, như lửa và nước chưa hòa hợp. Đây là quẻ nhắc nhở về việc cần tiếp tục nỗ lực, cẩn trọng để hoàn thành công việc còn dang dở."
-            }]
-        ]);
+ const giaiThichQue = new Map([
+    ["THUẦN CÀN", { 
+        soThuTu: 1, 
+        yNghia: "Sáng tạo, mạnh mẽ, trời", 
+        tho: "Trời ôm trời, cao cả thành\nLàm cha Nguyên, Lợi, Trinh, Hanh, mạnh cường.", 
+        giaiThich: "Quẻ Thuần Càn tượng trưng cho trời, biểu thị sự sáng tạo, mạnh mẽ và quyền lực tối cao. Đây là quẻ của sự khởi đầu, khuyến khích hành động quyết đoán, chính trực và bền bỉ. Người nhận quẻ này nên giữ vững đạo đức, hành động đúng đắn để đạt được thành công lớn.\n\n**Thoán từ**: 'Càn: Nguyên, Hanh, Lợi, Trinh.' - Khởi nguồn vĩ đại, thông suốt, có lợi, kiên định.\n\n**Hào từ**:\n1. Sơ Cửu: 'Tiềm long vật dụng' - Rồng ẩn, chưa đến lúc hành động.\n2. Cửu Nhị: 'Hiện long tại điền' - Rồng xuất hiện ở cánh đồng, gặp thời cơ tốt.\n3. Cửu Tam: 'Quân tử chung nhật càn càn' - Người quân tử suốt ngày nỗ lực, cẩn trọng.\n4. Cửu Tứ: 'Hoặc dược tại uyên' - Rồng nhảy trong vực sâu, linh hoạt chờ thời.\n5. Cửu Ngũ: 'Phi long tại thiên' - Rồng bay trên trời, đạt vị trí tối cao, đại cát.\n6. Thượng Cửu: 'Khang long hữu hối' - Rồng kiêu ngạo quá mức, sẽ có điều hối tiếc."
+    }],
+    ["THUẦN KHÔN", { 
+        soThuTu: 2, 
+        yNghia: "Tiếp nhận, nhu thuận, đất", 
+        tho: "Đất ôm đất, mẹ yêu cha\nBao dung, nhu thuận, thái hòa, sinh nuôi.", 
+        giaiThich: "Quẻ Thuần Khôn tượng trưng cho đất, biểu thị sự bao dung, nhu thuận và nuôi dưỡng. Đây là quẻ của sự tiếp nhận, khuyến khích sự kiên nhẫn, khiêm tốn và hỗ trợ người khác. Người nhận quẻ này nên học cách nhẫn nại và làm việc vì lợi ích chung.\n\n**Thoán từ**: 'Khôn: Nguyên, Hanh, Lợi, Trinh chi mã.' - Khởi nguồn lớn lao, thuận lợi, có lợi khi kiên trì như ngựa cái.\n\n**Hào từ**:\n1. Sơ Lục: 'Lý sương, kiên băng chí' - Đạp lên sương, băng cứng sắp đến, cần cẩn thận.\n2. Lục Nhị: 'Trực phương đại' - Thẳng thắn, vuông vắn, rộng lớn, đạt điều tốt mà không cần cố gắng.\n3. Lục Tam: 'Hàm chương khả trinh' - Ẩn chứa vẻ đẹp, giữ vững chính đạo, có thể thành công.\n4. Lục Tứ: 'Quát nang vô cữu' - Buộc túi lại, không lộ ra, tránh họa.\n5. Lục Ngũ: 'Hoàng thường nguyên cát' - Áo vàng rực rỡ, đại cát, biểu thị sự cao quý và hòa hợp.\n6. Thượng Lục: 'Long chiến vu dã' - Rồng đấu ngoài đồng, xung đột lớn, hung hiểm."
+    }],
+    ["THỦY LÔI TRUÂN", { 
+        soThuTu: 3, 
+        yNghia: "Khởi đầu khó khăn", 
+        tho: "Nước trên sấm lắm gian truân\nMưa to tạnh, có ân nhân giúp đời.", 
+        giaiThich: "Quẻ Thủy Lôi Truân biểu thị sự khó khăn ban đầu, như mầm non mới nhú gặp mưa sấm. Dù khó khăn, nhưng nếu kiên trì và có sự giúp đỡ từ người khác, bạn sẽ vượt qua và phát triển. Hãy kiên nhẫn và tìm kiếm sự hỗ trợ.\n\n**Thoán từ**: 'Truân: Nguyên hanh lợi trinh, vật dục vội vàng.' - Khởi đầu khó khăn nhưng thuận lợi nếu kiên trì, không nên vội vàng.\n\n**Hào từ**:\n1. Sơ Lục: 'Do dự tiến thoái' - Do dự, chưa biết tiến hay lùi.\n2. Cửu Nhị: 'Truân như nạo như' - Khó khăn kêu ca, cần kiên nhẫn.\n3. Lục Tam: 'Vô công mà đi' - Không có công lao mà tiến, dễ thất bại.\n4. Lục Tứ: 'Cưỡi ngựa lớp lớp' - Có sự hỗ trợ, tiến lên thuận lợi.\n5. Cửu Ngũ: 'Truân kỳ cao' - Khó khăn ở vị cao, cần giúp đỡ kẻ dưới.\n6. Thượng Lục: 'Ngựa xe tan tác' - Hỗn loạn, cần cẩn thận để vượt qua."
+    }],
+    ["SƠN THỦY MÔNG", { 
+        soThuTu: 4, 
+        yNghia: "Non trẻ, ngu muội", 
+        tho: "Âm u thủy khởi sơn đầu\nNâng khơi chính đạo, sông sâu núi dài.", 
+        giaiThich: "Quẻ Sơn Thủy Mông biểu thị sự non trẻ, chưa hiểu biết, như dòng nước chảy dưới núi. Đây là thời điểm cần học hỏi, tìm kiếm sự hướng dẫn từ người đi trước để khai sáng con đường chính đạo. Hãy khiêm tốn và cầu tiến.\n\n**Thoán từ**: 'Mông: Hanh, thông suốt nhờ khai mở.' - Thành công nhờ sự giáo dục, khai sáng.\n\n**Hào từ**:\n1. Sơ Lục: 'Phát mông' - Khai sáng sự ngu muội, cần kỷ luật.\n2. Cửu Nhị: 'Bao mông cát' - Bao dung với kẻ non trẻ, tốt lành.\n3. Lục Tam: 'Vật dụng thủ nữ' - Đừng cưới người không chính, dễ hại.\n4. Lục Tứ: 'Khốn mông' - Bị vây trong ngu muội, bất lợi.\n5. Lục Ngũ: 'Đồng mông cát' - Non trẻ biết nghe lời, tốt lành.\n6. Thượng Cửu: 'Kích mông' - Dùng nghiêm khắc để dạy dỗ, không quá cứng."
+    }],
+    ["THỦY THIÊN NHU", { 
+        soThuTu: 5, 
+        yNghia: "Kiên nhẫn chờ đợi", 
+        tho: "Nước đang đổ xuống đầu trời\nThiện kiên nhẫn đợi, thiên thời dành cho.", 
+        giaiThich: "Quẻ Thủy Thiên Nhu biểu thị sự chờ đợi thời cơ, như nước trên trời chưa thể rơi ngay. Đây là lời khuyên về sự kiên nhẫn, chờ đợi đúng thời điểm để hành động. Hãy giữ vững niềm tin và chuẩn bị kỹ lưỡng.\n\n**Thoán từ**: 'Nhu: Hữu phu, lợi trinh, hanh.' - Có niềm tin, kiên trì thì thuận lợi.\n\n**Hào từ**:\n1. Sơ Cửu: 'Nhu vu giao' - Chờ ở ngoại ô, chưa đến lúc.\n2. Cửu Nhị: 'Nhu vu sa' - Chờ trên cát, nhỏ mà an.\n3. Cửu Tam: 'Nhu vu nê' - Chờ trong bùn, dễ gặp nguy.\n4. Lục Tứ: 'Nhu vu huyết' - Chờ trong hiểm nguy, cần cẩn thận.\n5. Cửu Ngũ: 'Nhu vu tửu thực' - Chờ trong an nhàn, tốt lành.\n6. Thượng Lục: 'Nhập vu huyệt' - Rơi vào hang, bất lợi nếu không chuẩn bị."
+    }],
+    ["THIÊN THỦY TỤNG", { 
+        soThuTu: 6, 
+        yNghia: "Tranh chấp, kiện tụng", 
+        tho: "Thấp cao, to nhỏ khó hòa\nTranh nhau, kiện tụng bỏ qua ắt thành.", 
+        giaiThich: "Quẻ Thiên Thủy Tụng biểu thị sự tranh chấp, mâu thuẫn, như trời và nước không hòa hợp. Để vượt qua, cần tránh đối đầu trực diện, tìm cách hòa giải và nhượng bộ. Hãy giữ tâm bình thản để giải quyết vấn đề.\n\n**Thoán từ**: 'Tụng: Hữu phu, bế tắc, nửa chừng bỏ.' - Có tranh chấp, bế tắc, nên dừng nửa đường.\n\n**Hào từ**:\n1. Sơ Lục: 'Bất vĩnh sở sự' - Không kéo dài tranh cãi, tốt.\n2. Cửu Nhị: 'Bất khắc tụng' - Không thắng kiện, nên rút lui.\n3. Lục Tam: 'Thực cựu đức' - Giữ đạo cũ, tránh kiện tụng.\n4. Cửu Tứ: 'Bất khắc tụng, phục tức' - Không thắng, quay về chính đạo.\n5. Cửu Ngũ: 'Tụng nguyên cát' - Kiện tụng công bằng, đại cát.\n6. Thượng Cửu: 'Hoặc tin chi khuê' - Thắng kiện nhưng không lâu dài."
+    }],
+    ["ĐỊA THỦY SƯ", { 
+        soThuTu: 7, 
+        yNghia: "Quân đội, kỷ luật", 
+        tho: "Đất ngăn nước tạo nên hồ\nRa quân trị thủy để cho dân giàu.", 
+        giaiThich: "Quẻ Địa Thủy Sư biểu thị sự đoàn kết và kỷ luật, như quân đội được tổ chức chặt chẽ. Đây là thời điểm cần sự lãnh đạo sáng suốt và tinh thần tập thể để vượt qua khó khăn. Hãy hành động có kế hoạch và trật tự.\n\n**Thoán từ**: 'Sư: Trinh, trưởng nhân cát, vô cữu.' - Kiên trì, người lãnh đạo tốt thì không lỗi.\n\n**Hào từ**:\n1. Sơ Lục: 'Sư xuất dĩ luật' - Quân ra có kỷ luật, tốt.\n2. Cửu Nhị: 'Tại sư trung cát' - Ở giữa quân, lãnh đạo tốt, cát.\n3. Lục Tam: 'Sư hoặc dư thi' - Quân mang xác chết, hung.\n4. Lục Tứ: 'Sư tả thứ' - Quân rút lui, không lỗi.\n5. Lục Ngũ: 'Điền hữu cầm' - Săn được thú, cần người tài trị.\n6. Thượng Lục: 'Đại quân hữu mệnh' - Vua ban mệnh, cẩn thận chọn người."
+    }],
+    ["THỦY ĐỊA TỈ", { 
+        soThuTu: 8, 
+        yNghia: "Đoàn kết, hòa hợp", 
+        tho: "Nước trên đất dưới bùn đen\nGiao hòa đất nước nuôi sen cho đời.", 
+        giaiThich: "Quẻ Thủy Địa Tỉ biểu thị sự hòa hợp, như nước và đất cùng nuôi dưỡng sự sống. Đây là quẻ của sự đoàn kết, khuyến khích sự hợp tác và hỗ trợ lẫn nhau. Hãy xây dựng mối quan hệ tốt đẹp để cùng phát triển.\n\n**Thoán từ**: 'Tỉ: Cát, nguyên vĩnh trinh.' - Hòa hợp thì tốt, kiên trì mãi mãi.\n\n**Hào từ**:\n1. Sơ Lục: 'Hữu phu tỉ chi' - Có lòng tin hòa hợp, tốt.\n2. Lục Nhị: 'Tỉ chi tự nội' - Hòa hợp từ bên trong, cát.\n3. Lục Tam: 'Tỉ chi phỉ nhân' - Hòa với kẻ xấu, hung.\n4. Lục Tứ: 'Ngoại tỉ chi' - Hòa với người ngoài, tốt.\n5. Cửu Ngũ: 'Hiển tỉ' - Hòa hợp rõ ràng, vua tốt.\n6. Thượng Lục: 'Tỉ chi vô thủ' - Hòa hợp không đầu mối, hung."
+    }],
+    ["PHONG THIÊN TIỂU SÚC", { 
+        soThuTu: 9, 
+        yNghia: "Tích lũy nhỏ", 
+        tho: "Hiu hiu gió thổi đầu trời\nGió nuôi mát mẻ, chớ nuôi bão bùng.", 
+        giaiThich: "Quẻ Phong Thiên Tiểu Súc biểu thị sự tích lũy từng chút một, như gió nhẹ thổi trên trời. Đây là lời khuyên về sự kiên trì, tích lũy dần dần để đạt được thành công. Tránh hành động vội vàng, hãy giữ sự ổn định.\n\n**Thoán từ**: 'Tiểu Súc: Hanh, mây dày không mưa.' - Thuận lợi, nhưng chưa đến lúc thành công lớn.\n\n**Hào từ**:\n1. Sơ Cửu: 'Phục tự đạo' - Trở về chính đạo, tốt.\n2. Cửu Nhị: 'Khiên phục' - Bị kéo về, trung chính thì tốt.\n3. Cửu Tam: 'Xe thoát trục' - Xe mất bánh, cẩn thận bất hòa.\n4. Lục Tứ: 'Hữu phu huyết khứ' - Có lòng tin, tránh được nguy.\n5. Cửu Ngũ: 'Hữu phu liên như' - Tin nhau như buộc chặt, giàu có.\n6. Thượng Cửu: 'Cả mưa cả nghỉ' - Đã thành công, nên dừng lại."
+    }],
+    ["THIÊN TRẠCH LÝ", { 
+        soThuTu: 10, 
+        yNghia: "Cẩn trọng, bước đi", 
+        tho: "Đạo trời, thấp dưới cao trên\nSửa mình cho đúng ắt nên người hiền.", 
+        giaiThich: "Quẻ Thiên Trạch Lý biểu thị sự cẩn trọng trong hành động, như đi trên mặt đầm mỏng manh dưới trời cao. Đây là lời khuyên về việc giữ đạo đức, hành động đúng đắn và cẩn thận để tránh sai lầm.\n\n**Thoán từ**: 'Lý: Hanh, cẩn thận thì không lỗi.' - Thuận lợi, cẩn thận thì vô cữu.\n\n**Hào từ**:\n1. Sơ Cửu: 'Tố lý nhi khứ' - Đi đơn giản, không lỗi.\n2. Cửu Nhị: 'Lý đạo thản thản' - Đường bằng phẳng, ẩn dật thì tốt.\n3. Lục Tam: 'Mù mà lý hùm' - Mù đi đạp hùm, nguy.\n4. Cửu Tứ: 'Lý hùm vĩ' - Đạp đuôi hùm, cẩn thận thì thành.\n5. Cửu Ngũ: 'Quyết lý trinh' - Quyết tâm đi, kiên trì thì tốt.\n6. Thượng Cửu: 'Thị lý hanh' - Nhìn lại đường đi, tốt lành."
+    }],
+    ["ĐỊA THIÊN THÁI", { 
+        soThuTu: 11, 
+        yNghia: "Thái bình, thông suốt", 
+        tho: "Thái hòa mọi vật sinh sôi\nGiáng khí đất, thăng khí trời Càn Khôn.", 
+        giaiThich: "Quẻ Địa Thiên Thái biểu thị sự thái bình, thông suốt, như đất và trời giao hòa. Đây là quẻ tốt, báo hiệu thời kỳ thịnh vượng, mọi việc thuận lợi. Hãy tận dụng thời cơ để phát triển và lan tỏa điều tốt đẹp.\n\n**Thoán từ**: 'Thái: Tiểu vãng đại lai, cát hanh.' - Nhỏ đi, lớn đến, tốt lành.\n\n**Hào từ**:\n1. Sơ Cửu: 'Bạt mao như' - Nhổ cỏ tranh, đoàn kết thì tốt.\n2. Cửu Nhị: 'Bao hoang' - Bao dung kẻ xa, vượt khó thành công.\n3. Cửu Tam: 'Vô bình bất pha' - Không phẳng thì nghiêng, cẩn thận.\n4. Lục Tứ: 'Phiêu phiêu' - Nhẹ nhàng xuống, hòa hợp thì tốt.\n5. Lục Ngũ: 'Đế Giáp hạ giá' - Vua gả em, cát lành.\n6. Thượng Lục: 'Thành khuynh phúc' - Thành nghiêng đổ, hung."
+    }],
+    ["THIÊN ĐỊA BỈ", { 
+        soThuTu: 12, 
+        yNghia: "Bế tắc, đình trệ", 
+        tho: "Trời đất bất trắc, bất hòa\nNắm ngay cơ hội vượt qua thời này.", 
+        giaiThich: "Quẻ Thiên Địa Bĩ biểu thị sự bế tắc, như trời và đất không giao hòa. Đây là thời điểm khó khăn, cần kiên nhẫn và tìm cơ hội để vượt qua. Hãy giữ vững niềm tin và hành động đúng thời điểm.\n\n**Thoán từ**: 'Bĩ: Phỉ nhân, bất lợi quân tử trinh.' - Không hợp người, bất lợi cho quân tử kiên trì.\n\n**Hào từ**:\n1. Sơ Lục: 'Bạt mao như' - Nhổ cỏ tranh, kiên trì thì tốt.\n2. Lục Nhị: 'Bao sỉ' - Chịu nhục, kiên nhẫn thì an.\n3. Lục Tam: 'Bao tàm' - Chịu xấu hổ, hung.\n4. Cửu Tứ: 'Hữu mệnh vô cữu' - Có mệnh trời, không lỗi.\n5. Cửu Ngũ: 'Hưu bĩ chi cát' - Nghỉ ngơi trong bế tắc, tốt.\n6. Thượng Cửu: 'Khuynh bĩ tiên hĩ' - Lật đổ bế tắc, vui vẻ."
+    }],
+    ["THIÊN HỎA ĐỒNG NHÂN", { 
+        soThuTu: 13, 
+        yNghia: "Đồng lòng, hợp tác", 
+        tho: "Lửa sáng, trời sáng chung lòng\nTrung trinh, chính nghĩa cộng đồng mới đông.", 
+        giaiThich: "Quẻ Thiên Hỏa Đồng Nhân biểu thị sự hợp tác, như lửa và trời cùng chiếu sáng. Đây là quẻ khuyến khích sự đoàn kết, làm việc vì lợi ích chung. Hãy giữ tâm trung thực và chính nghĩa để thu hút sự ủng hộ.\n\n**Thoán từ**: 'Đồng Nhân: Vu dã, hanh.' - Đồng lòng ngoài đồng, thuận lợi.\n\n**Hào từ**:\n1. Sơ Cửu: 'Đồng nhân vu môn' - Đồng lòng ở cửa, không lỗi.\n2. Cửu Nhị: 'Đồng nhân vu tông' - Đồng lòng trong họ, hẹp hòi thì xấu.\n3. Lục Tam: 'Phục binh vu tòng' - Ẩn quân trong bụi, cẩn thận.\n4. Cửu Tứ: 'Thừa tường công chi' - Trèo tường đánh, chưa thành.\n5. Cửu Ngũ: 'Đồng nhân tiên hào' - Đồng lòng sau khóc, đại cát.\n6. Thượng Cửu: 'Đồng nhân vu giao' - Đồng lòng ở xa, không hối."
+    }],
+    ["HỎA THIÊN ĐẠI HỮU", { 
+        soThuTu: 14, 
+        yNghia: "Sở hữu lớn", 
+        tho: "Lửa trời chiếu sáng nơi nơi\nCủa quý nhất đời hạnh phúc, văn minh.", 
+        giaiThich: "Quẻ Hỏa Thiên Đại Hữu biểu thị sự sở hữu lớn, như lửa trên trời chiếu sáng mọi nơi. Đây là quẻ tốt, báo hiệu sự thành công, thịnh vượng và hạnh phúc. Hãy sử dụng tài sản và thành tựu để làm điều tốt đẹp.\n\n**Thoán từ**: 'Đại Hữu: Nguyên hanh.' - Sở hữu lớn, khởi nguồn thuận lợi.\n\n**Hào từ**:\n1. Sơ Cửu: 'Vô giao hại' - Không giao hại, không lỗi.\n2. Cửu Nhị: 'Đại xa dĩ tái' - Xe lớn chở nặng, tốt.\n3. Cửu Tam: 'Công dụng thi vu thiên tử' - Công dâng vua, tốt.\n4. Cửu Tứ: 'Phỉ kỳ bồng' - Không khoe khoang, tốt.\n5. Lục Ngũ: 'Phu giao như uy như' - Tin cậy và uy nghiêm, cát.\n6. Thượng Cửu: 'Tự thiên hựu chi' - Trời giúp, đại cát."
+    }],
+    ["ĐỊA SƠN KHIÊM", { 
+        soThuTu: 15, 
+        yNghia: "Khiêm tốn, nhún nhường", 
+        tho: "Núi dưới đất thấp, càng cao\nĐạo trời đất dẫn ta vào với Khiêm.", 
+        giaiThich: "Quẻ Địa Sơn Khiêm biểu thị sự khiêm tốn, như núi nằm dưới đất. Đây là lời khuyên về việc giữ thái độ nhún nhường, không kiêu ngạo, để đạt được sự tôn trọng và thành công lâu dài.\n\n**Thoán từ**: 'Khiêm: Hanh, quân tử hữu chung.' - Khiêm tốn thì thuận, quân tử thành công.\n\n**Hào từ**:\n1. Sơ Lục: 'Khiêm khiêm quân tử' - Khiêm tốn hơn nữa, tốt.\n2. Lục Nhị: 'Minh khiêm trinh cát' - Khiêm tốn sáng tỏ, tốt.\n3. Cửu Tam: 'Lao khiêm quân tử' - Cần mẫn khiêm tốn, cát.\n4. Lục Tứ: 'Vô bất lợi, huy khiêm' - Mọi sự lợi, phát huy khiêm tốn.\n5. Lục Ngũ: 'Bất phú dĩ lân' - Không giàu mà đánh láng giềng, bất lợi.\n6. Thượng Lục: 'Minh khiêm hữu công' - Khiêm tốn sáng, lập công."
+    }],
+    ["LÔI ĐỊA DỰ", { 
+        soThuTu: 16, 
+        yNghia: "Vui vẻ, chuẩn bị", 
+        tho: "Sấm vang dậy đất vui mừng\nGiữ mình, vô độ thì đừng, sáng khôn.", 
+        giaiThich: "Quẻ Lôi Địa Dự biểu thị sự vui vẻ và chuẩn bị, như sấm vang trên đất. Đây là thời điểm thuận lợi để chuẩn bị cho những kế hoạch lớn. Hãy giữ tâm trạng lạc quan nhưng tránh phóng túng.\n\n**Thoán từ**: 'Dự: Lợi kiến hầu, hành sư.' - Lợi lập chư hầu, xuất quân.\n\n**Hào từ**:\n1. Sơ Lục: 'Minh dự hung' - Khoe vui, hung.\n2. Lục Nhị: 'Giới thạch' - Giữ như đá, tốt.\n3. Lục Tam: 'Hú dự hối' - Vui trễ nải, hối hận.\n4. Cửu Tứ: 'Do dự đại hữu đắc' - Nguồn vui lớn, thành công.\n5. Lục Ngũ: 'Trinh tật' - Ốm mà kiên trì, không chết.\n6. Thượng Lục: 'Ám dự thành' - Vui trong tối, nên thay đổi."
+    }],
+    ["TRẠCH LÔI TÙY", { 
+        soThuTu: 17, 
+        yNghia: "Tùy tùng, thích ứng", 
+        tho: "Sấm trong đầm sóng vui rung\nCùng theo chính đạo thì cùng hanh thông.", 
+        giaiThich: "Quẻ Trạch Lôi Tùy biểu thị sự thích ứng, như sấm vang trong đầm. Đây là lời khuyên về việc linh hoạt, biết theo đúng người và đúng đạo để đạt được thành công. Hãy giữ tâm chính trực.\n\n**Thoán từ**: 'Tùy: Nguyên hanh lợi trinh, vô cữu.' - Theo đúng thì tốt, không lỗi.\n\n**Hào từ**:\n1. Sơ Cửu: 'Quan hữu du' - Quan thay đổi, tốt.\n2. Lục Nhị: 'Hệ tiểu nhân' - Theo kẻ nhỏ, mất người lớn.\n3. Lục Tam: 'Hệ trượng phu' - Theo người lớn, bỏ kẻ nhỏ, tốt.\n4. Cửu Tứ: 'Tùy hữu hoạch' - Theo có lợi, nhưng cần chính.\n5. Cửu Ngũ: 'Phu vu giai' - Theo điều tốt, cát.\n6. Thượng Lục: 'Câu hệ chi' - Bị trói buộc, rồi giải thoát."
+    }],
+    ["SƠN PHONG CỔ", { 
+        soThuTu: 18, 
+        yNghia: "Sửa chữa, đổi mới", 
+        tho: "Núi ngăn gió có việc rồi\nSửa mình chân chính xứng người sáng khôn.", 
+        giaiThich: "Quẻ Sơn Phong Cổ biểu thị sự sửa chữa, như núi ngăn gió để làm mới. Đây là thời điểm cần sửa đổi những sai lầm, làm mới bản thân và môi trường xung quanh. Hãy hành động chân chính.\n\n**Thoán từ**: 'Cổ: Nguyên hanh lợi, trinh.' - Sửa chữa thì tốt, kiên trì.\n\n**Hào từ**:\n1. Sơ Lục: 'Can cổ' - Sửa lỗi cha, nhẹ thì tốt.\n2. Cửu Nhị: 'Can cổ của mẹ' - Sửa lỗi mẹ, không nên cứng.\n3. Cửu Tam: 'Can cổ của cha' - Sửa lỗi cha, có hối nhỏ.\n4. Lục Tứ: 'Dung cổ của cha' - Dung thứ lỗi cha, hung.\n5. Lục Ngũ: 'Can cổ thừa danh' - Sửa lỗi cha, được danh tốt.\n6. Thượng Cửu: 'Bất sự vương hầu' - Không màng công danh, cao thượng."
+    }],
+    ["ĐỊA TRẠCH LÂM", { 
+        soThuTu: 19, 
+        yNghia: "Đến gần, phát triển", 
+        tho: "Đất trên đầm đến với nuôi\nNuôi là đạo lớn nhất đời người theo.", 
+        giaiThich: "Quẻ Địa Trạch Lâm biểu thị sự phát triển, như đất đến gần đầm để nuôi dưỡng. Đây là quẻ tốt, báo hiệu sự tiến triển và thành công. Hãy tận dụng thời cơ để phát triển và giúp đỡ người khác.\n\n**Thoán từ**: 'Lâm: Nguyên hanh lợi, chí bát nguyệt hữu hung.' - Đến gần tốt, nhưng tháng tám có hung.\n\n**Hào từ**:\n1. Sơ Cửu: 'Hàm lâm trinh cát' - Đến gần chính trực, tốt.\n2. Cửu Nhị: 'Hàm lâm cát' - Đến gần tốt, mọi sự lợi.\n3. Lục Tam: 'Cam lâm vô du lợi' - Ngọt mà đến, không lợi.\n4. Lục Tứ: 'Chí lâm vô cữu' - Đến hoàn hảo, không lỗi.\n5. Lục Ngũ: 'Tri lâm' - Biết đến gần, đại quân tử cát.\n6. Thượng Lục: 'Đôn lâm cát' - Đến chân thành, tốt."
+    }],
+    ["PHONG ĐỊA QUAN", { 
+        soThuTu: 20, 
+        yNghia: "Quan sát, xem xét", 
+        tho: "Gió trên đất tất theo phương\nGió có mắt dắt dẫn đường mát thơm.", 
+        giaiThich: "Quẻ Phong Địa Quan biểu thị sự quan sát, như gió thổi trên đất. Đây là lời khuyên về việc nhìn nhận, học hỏi và dẫn dắt người khác bằng tấm gương sáng. Hãy giữ tâm trong sạch và sáng suốt.\n\n**Thoán từ**: 'Quan: Nguyên cát, rửa tay mà không dâng.' - Quan sát tốt, chuẩn bị mà chưa hành động.\n\n**Hào từ**:\n1. Sơ Lục: 'Đồng quan' - Quan sát non trẻ, nhỏ thì không lỗi.\n2. Lục Nhị: 'Khuy quan' - Nhìn qua khe, lợi cho nữ.\n3. Lục Tam: 'Quan ngã sinh' - Xem xét đời mình, tiến thoái đúng.\n4. Lục Tứ: 'Quan quốc chi quang' - Xem ánh sáng nước, cát.\n5. Cửu Ngũ: 'Quan ngã sinh' - Xem xét đời mình, quân tử không lỗi.\n6. Thượng Cửu: 'Quan kỳ sinh' - Xem xét đời người, không lỗi."
+    }],
+    ["HỎA LÔI PHỆ HẠP", { 
+        soThuTu: 21, 
+        yNghia: "Gặp trở ngại, cần vượt qua", 
+        tho: "Trừ ngăn cách, sạch gian tà\nLửa trên đầu sấm hợp hòa sáng vang.", 
+        giaiThich: "Quẻ Hỏa Lôi Phệ Hạp biểu thị sự vượt qua trở ngại, như lửa và sấm hợp sức. Đây là thời điểm cần quyết đoán, loại bỏ những cản trở để tiến lên. Hãy hành động mạnh mẽ và công bằng.\n\n**Thoán từ**: 'Phệ Hạp: Hanh, lợi dụng hình.' - Cắn hợp thì thuận, lợi dùng hình phạt.\n\n**Hào từ**:\n1. Sơ Cửu: 'Cù phệ' - Bị cùm chân, nhỏ thì không lỗi.\n2. Lục Nhị: 'Phệ phu' - Cắn da, không lỗi.\n3. Lục Tam: 'Phệ ky' - Cắn thịt khô, gặp khó nhỏ.\n4. Cửu Tứ: 'Phệ cán cốt' - Cắn xương khô, được mũi tên vàng, tốt.\n5. Lục Ngũ: 'Phệ thịt khô' - Cắn thịt khô, được vàng, kiên trì thì tốt.\n6. Thượng Cửu: 'Hà cù phệ' - Mang cùm cổ, hung."
+    }],
+    ["SƠN HỎA BÍ", { 
+        soThuTu: 22, 
+        yNghia: "Trang sức, vẻ đẹp bề ngoài", 
+        tho: "Lửa làm cho núi sáng hơn\nĐiểm trang lợi ít, lòng son lợi nhiều.", 
+        giaiThich: "Quẻ Sơn Hỏa Bí biểu thị vẻ đẹp bề ngoài, như lửa làm sáng núi. Đây là lời khuyên về việc chú trọng vẻ đẹp nội tâm hơn là hình thức bên ngoài. Hãy giữ tâm chân thành để đạt được thành công thực sự.\n\n**Thoán từ**: 'Bí: Hanh, tiểu lợi hữu du vãng.' - Trang sức thì thuận, nhỏ mà có lợi khi đi.\n\n**Hào từ**:\n1. Sơ Cửu: 'Bí kỳ chỉ' - Trang sức chân, bỏ xe đi bộ.\n2. Lục Nhị: 'Bí kỳ tu' - Trang sức râu, tốt.\n3. Cửu Tam: 'Phu như mạt như' - Sáng như ướt, kiên trì thì tốt.\n4. Lục Tứ: 'Bí như phấn như' - Đơn sơ như ngựa trắng, cưới được.\n5. Lục Ngũ: 'Bí vu khâu viên' - Trang sức ở đồi vườn, giản dị thì cát.\n6. Thượng Cửu: 'Bạch bí vô cữu' - Trang sức trắng, không lỗi."
+    }],
+    ["SƠN ĐỊA BÁC", { 
+        soThuTu: 23, 
+        yNghia: "Bóc lột, suy tàn", 
+        tho: "Núi trên đất tất tiêu điều\nKhi trên nền yếu, khi kiêu căng đời.", 
+        giaiThich: "Quẻ Sơn Địa Bác biểu thị sự suy tàn, như núi trên đất không vững. Đây là thời điểm cần cẩn trọng, tránh kiêu ngạo và xây dựng nền tảng vững chắc để tránh thất bại.\n\n**Thoán từ**: 'Bác: Bất lợi hữu du vãng.' - Suy tàn, không lợi khi đi đâu.\n\n**Hào từ**:\n1. Sơ Lục: 'Bác sàng dĩ túc' - Giường bị bóc chân, hung.\n2. Lục Nhị: 'Bác sàng dĩ biện' - Giường bị bóc cạnh, hung.\n3. Lục Tam: 'Bác chi vô cữu' - Bóc mà không lỗi, thoát khỏi xấu.\n4. Lục Tứ: 'Bác sàng dĩ phu' - Giường bóc đến da, hung.\n5. Lục Ngũ: 'Xuyến ngư' - Dẫn cá thành đàn, được ơn, không lỗi.\n6. Thượng Cửu: 'Đại quả bác' - Quả lớn bị bóc, mất hết."
+    }],
+    ["ĐỊA LÔI PHỤC", { 
+        soThuTu: 24, 
+        yNghia: "Trở lại, phục hồi", 
+        tho: "Sấm trong đất tất vui hồi\nĐất nuôi mầm hạnh thành chồi mai xanh.", 
+        giaiThich: "Quẻ Địa Lôi Phục biểu thị sự phục hồi, như sấm vang trong đất báo hiệu mùa xuân. Đây là quẻ tốt, báo hiệu sự trở lại của những điều tốt đẹp. Hãy kiên nhẫn và chuẩn bị cho sự khởi sắc.\n\n**Thoán từ**: 'Phục: Hanh, xuất nhập vô tật.' - Trở lại thì thuận, ra vào không bệnh.\n\n**Hào từ**:\n1. Sơ Cửu: 'Bất viễn phục' - Trở lại gần, không hối.\n2. Lục Nhị: 'Hưu phục cát' - Nghỉ mà trở lại, tốt.\n3. Lục Tam: 'Tần phục hung' - Trở lại nhiều lần, hung.\n4. Lục Tứ: 'Độc phục' - Một mình trở lại, tốt.\n5. Lục Ngũ: 'Đôn phục vô hối' - Chân thành trở lại, không hối.\n6. Thượng Lục: 'Mê phục chi tai' - Lạc lối trở lại, tai họa."
+    }],
+    ["THIÊN LÔI VÔ VỌNG", { 
+        soThuTu: 25, 
+        yNghia: "Vô tư, chân thật", 
+        tho: "Trời nổi sấm có thiên tai\nTrời cưng nhân đức, phạt ai làm càn.", 
+        giaiThich: "Quẻ Thiên Lôi Vô Vọng biểu thị sự chân thật, như sấm vang dưới trời. Đây là lời khuyên về việc sống ngay thẳng, không toan tính. Tránh hành động sai trái để không gặp tai họa.\n\n**Thoán từ**: 'Vô Vọng: Nguyên hanh lợi trinh.' - Không vọng thì tốt, kiên trì.\n\n**Hào từ**:\n1. Sơ Cửu: 'Vô vọng vãng cát' - Không vọng mà đi, tốt.\n2. Lục Nhị: 'Bất canh hữu mệnh' - Không gieo vẫn có, tốt.\n3. Lục Tam: 'Vô vọng chi tai' - Tai họa bất ngờ, mất bò.\n4. Cửu Tứ: 'Khả trinh vô cữu' - Kiên trì thì không lỗi.\n5. Cửu Ngũ: 'Vô vọng chi tật' - Bệnh bất ngờ, không cần thuốc.\n6. Thượng Cửu: 'Vô vọng chi hành' - Hành động vô vọng, hung."
+    }],
+    ["SƠN THIÊN ĐẠI SÚC", { 
+        soThuTu: 26, 
+        yNghia: "Tích lũy lớn", 
+        tho: "Núi chứa trời, chứa lớn lao\nTu nhân tích đức ắt cao cả thành.", 
+        giaiThich: "Quẻ Sơn Thiên Đại Súc biểu thị sự tích lũy lớn, như núi chứa trời. Đây là lời khuyên về việc tích lũy tri thức, đạo đức và tài năng để đạt được thành công lớn. Hãy kiên trì và chăm chỉ.\n\n**Thoán từ**: 'Đại Súc: Lợi trinh, bất gia thực cát.' - Tích lũy lớn, kiên trì thì tốt.\n\n**Hào từ**:\n1. Sơ Cửu: 'Hữu lệ bất tấn' - Có nguy, dừng lại, không lỗi.\n2. Cửu Nhị: 'Xe thoát trục' - Xe mất bánh, chờ thời.\n3. Cửu Tam: 'Lương mã truy phong' - Ngựa tốt đuổi gió, lợi luyện tập.\n4. Lục Tứ: 'Đồng ngưu chi cốc' - Sừng bò non, cát.\n5. Lục Ngũ: 'Phỉ trư chi nha' - Răng lợn thiến, cát.\n6. Thượng Cửu: 'Hà thiên chi túc' - Đường trời rộng, hanh thông."
+    }],
+    ["SƠN LÔI DI", { 
+        soThuTu: 27, 
+        yNghia: "Nuôi dưỡng, cung cấp", 
+        tho: "Núi nuôi sấm động lòng mình\nNgười nuôi đức hạnh, nghĩa tình người minh.", 
+        giaiThich: "Quẻ Sơn Lôi Di biểu thị sự nuôi dưỡng, như núi nuôi sấm. Đây là lời khuyên về việc chăm sóc bản thân và người khác, cả về vật chất lẫn tinh thần. Hãy nuôi dưỡng đức hạnh để trở thành người sáng suốt.\n\n**Thoán từ**: 'Di: Trinh cát, quan di.' - Nuôi dưỡng đúng thì tốt, xem xét cách nuôi.\n\n**Hào từ**:\n1. Sơ Cửu: 'Xả nhĩ linh quy' - Bỏ con rùa thiêng của mình, xấu.\n2. Lục Nhị: 'Di vu gian' - Nuôi từ dưới, bất lợi.\n3. Lục Tam: 'Phỉ di hung' - Không nuôi dưỡng, hung.\n4. Lục Tứ: 'Di vu điên cát' - Nuôi từ trên, tốt.\n5. Lục Ngũ: 'Phỉ thường' - Không theo lẽ thường, nên dựa người.\n6. Thượng Cửu: 'Do di cát' - Nguồn nuôi dưỡng, tốt."
+    }],
+    ["TRẠCH PHONG ĐẠI QUÁ", { 
+        soThuTu: 28, 
+        yNghia: "Quá tải, trách nhiệm nặng nề", 
+        tho: "Quá đáng giáng họa lẽ thường\nĐức cao, nhân cả phi thường làm nên.", 
+        giaiThich: "Quẻ Trạch Phong Đại Quá biểu thị sự quá tải, như đầm chịu sức gió lớn. Đây là thời điểm cần cẩn trọng, tránh tham lam và hành động vượt quá khả năng. Hãy giữ đức cao để vượt qua khó khăn.\n\n**Thoán từ**: 'Đại Quá: Lương khuynh.' - Quá lớn thì xà nhà nghiêng.\n\n**Hào từ**:\n1. Sơ Lục: 'Tá bạch mao' - Mượn cỏ trắng, không lỗi.\n2. Cửu Nhị: 'Khô dương sinh hoa' - Dương khô đâm chồi, tốt.\n3. Cửu Tam: 'Lương khuynh hung' - Xà nhà nghiêng, hung.\n4. Cửu Tứ: 'Lương hà cát' - Xà nhà vững, tốt.\n5. Lục Ngũ: 'Khô dương sinh hoa' - Dương khô ra hoa, không bền.\n6. Thượng Lục: 'Đại quá độ hà' - Quá lớn vượt sông, hung."
+    }],
+    ["THUẦN KHẢM", { 
+        soThuTu: 29, 
+        yNghia: "Nước, hiểm trở", 
+        tho: "Nước hai lần hiểm cản tà\nHiền tài nhân đức vượt qua dễ dàng.", 
+        giaiThich: "Quẻ Thuần Khảm biểu thị sự hiểm nguy, như nước chảy xiết. Đây là quẻ nhắc nhở về việc đối mặt với khó khăn, nhưng nếu giữ tâm chính trực và nhân đức, bạn sẽ vượt qua một cách an toàn.\n\n**Thoán từ**: 'Khảm: Tập khảm, hữu phu, trinh cát.' - Hiểm trở lặp lại, có lòng tin thì tốt.\n\n**Hào từ**:\n1. Sơ Lục: 'Tập khảm nhập khảm' - Hiểm trong hiểm, hung.\n2. Lục Nhị: 'Khảm hữu hiểm' - Có hiểm nhỏ, cầu nhỏ thì được.\n3. Lục Tam: 'Lai chi khảm khảm' - Đến đi đều hiểm, nguy.\n4. Lục Tứ: 'Tôn tửu khuyển' - Rượu lễ giản đơn, không lỗi.\n5. Cửu Ngũ: 'Khảm bất doanh' - Hố không đầy, không lỗi.\n6. Thượng Lục: 'Hệ dụng huy' - Bị trói trong hiểm, hung."
+    }],
+    ["THUẦN LI", { 
+        soThuTu: 30, 
+        yNghia: "Lửa, sáng suốt", 
+        tho: "Hai Li sáng quá hóa mờ\nChẳng ai thích kẻ hay phô trương nhiều.", 
+        giaiThich: "Quẻ Thuần Li biểu thị sự sáng suốt, như lửa rực rỡ. Tuy nhiên, nếu quá phô trương sẽ gây phản tác dụng. Đây là lời khuyên về việc giữ sự khiêm tốn, sử dụng trí tuệ một cách đúng đắn.\n\n**Thoán từ**: 'Li: Lợi trinh, hanh, chăn bò cát.' - Gắn bó thì lợi, thuận, nuôi bò tốt.\n\n**Hào từ**:\n1. Sơ Cửu: 'Lý kỳ chỉ' - Bước chân rối, kính thì không lỗi.\n2. Lục Nhị: 'Hoàng li' - Ánh sáng vàng, đại cát.\n3. Cửu Tam: 'Nhật trắc chi li' - Mặt trời lặn, buồn thì hung.\n4. Lục Tứ: 'Đột như lai như' - Bùng lên rồi tắt, hung.\n5. Lục Ngũ: 'Xuất lệ' - Chảy nước mắt, tốt.\n6. Thượng Cửu: 'Vương dụng xuất chinh' - Vua xuất chinh, có công."
+    }],
+    ["TRẠCH SƠN HÀM", { 
+        soThuTu: 31, 
+        yNghia: "Cảm ứng, giao tiếp", 
+        tho: "Đầm trên đầu núi thơ nhiều\nTình yêu cao thượng, tình yêu lâu dài.", 
+        giaiThich: "Quẻ Trạch Sơn Hàm biểu thị sự cảm ứng, như đầm và núi giao hòa. Đây là quẻ tốt cho tình cảm, khuyến khích sự chân thành và giao tiếp sâu sắc để xây dựng mối quan hệ bền vững.\n\n**Thoán từ**: 'Hàm: Hanh, lợi trinh, thú nữ cát.' - Cảm ứng thuận lợi, lấy vợ tốt.\n\n**Hào từ**:\n1. Sơ Lục: 'Hàm kỳ chỉ' - Cảm ở ngón chân, bình thường.\n2. Lục Nhị: 'Hàm kỳ phế' - Cảm ở bắp chân, hung, chờ thì tốt.\n3. Cửu Tam: 'Hàm kỳ cổ' - Cảm ở đùi, bám theo thì xấu.\n4. Cửu Tứ: 'Trinh cát hối vong' - Kiên trì thì tốt, hối tiêu.\n5. Cửu Ngũ: 'Hàm kỳ phế' - Cảm ở lưng, không hối.\n6. Thượng Lục: 'Hàm kỳ phụ' - Cảm ở má, lưỡi, bình thường."
+    }],
+    ["LÔI PHONG HẰNG", { 
+        soThuTu: 32, 
+        yNghia: "Bền bỉ, kiên trì", 
+        tho: "Vĩnh hằng sấm có gió trong\nVĩnh hằng tình vợ, nghĩa chồng trời xe.", 
+        giaiThich: "Quẻ Lôi Phong Hằng biểu thị sự bền bỉ, như sấm và gió hỗ trợ nhau. Đây là quẻ tốt cho sự ổn định, khuyến khích sự kiên định trong tình cảm và công việc. Hãy giữ vững cam kết để thành công.\n\n**Thoán từ**: 'Hằng: Hanh, vô cữu, lợi trinh.' - Bền lâu thì thuận, không lỗi, kiên trì.\n\n**Hào từ**:\n1. Sơ Lục: 'Tầm hằng' - Đào sâu bền lâu, hung.\n2. Cửu Nhị: 'Hối vong' - Hối hận tiêu, tốt.\n3. Cửu Tam: 'Bất hằng kỳ đức' - Không bền đức, xấu hổ.\n4. Cửu Tứ: 'Điền vô cầm' - Săn không được thú, bất lợi.\n5. Lục Ngũ: 'Hằng kỳ đức' - Bền đức, nữ tốt, nam hung.\n6. Thượng Lục: 'Chấn hằng hung' - Dao động khi bền, hung."
+    }],
+    ["THIÊN SƠN ĐỘN", { 
+        soThuTu: 33, 
+        yNghia: "Rút lui, ẩn dật", 
+        tho: "Núi khiêm núi trốn trong trời\nGiữ mình vững chãi thì đời núi cao.", 
+        giaiThich: "Quẻ Thiên Sơn Độn biểu thị sự rút lui, như núi ẩn dưới trời. Đây là lời khuyên về việc tạm thời tránh xa tranh chấp, giữ mình trong sạch để bảo toàn lực lượng và chờ thời cơ.\n\n**Thoán từ**: 'Độn: Hanh, tiểu lợi trinh.' - Rút lui thì thuận, nhỏ mà kiên trì.\n\n**Hào từ**:\n1. Sơ Lục: 'Độn vĩ lệ' - Rút đuôi, nguy, đừng hành động.\n2. Lục Nhị: 'Chấp chi dụng hoàng ngưu' - Giữ bằng da trâu vàng, không thoát.\n3. Cửu Tam: 'Hệ độn hữu tật' - Rút lui bị ràng, nguy.\n4. Cửu Tứ: 'Hảo độn' - Rút lui vui, quân tử tốt.\n5. Cửu Ngũ: 'Gia độn cát' - Rút lui tốt, cát.\n6. Thượng Cửu: 'Phì độn vô bất lợi' - Rút lui lớn, mọi sự lợi."
+    }],
+    ["LÔI THIÊN ĐẠI TRÁNG", { 
+        soThuTu: 34, 
+        yNghia: "Mạnh mẽ, quyết đoán", 
+        tho: "Sấm trên trời vọng xa xôi\nLớn mạnh tránh ác thì đời hanh thông.", 
+        giaiThich: "Quẻ Lôi Thiên Đại Tráng biểu thị sự mạnh mẽ, như sấm vang trên trời. Đây là thời điểm thuận lợi để hành động quyết đoán, nhưng cần tránh làm điều ác để giữ được sự hanh thông.\n\n**Thoán từ**: 'Đại Tráng: Lợi trinh.' - Mạnh lớn, kiên trì thì lợi.\n\n**Hào từ**:\n1. Sơ Cửu: 'Tráng vu chỉ' - Mạnh ở ngón chân, đi thì hung.\n2. Cửu Nhị: 'Trinh cát' - Kiên trì thì tốt.\n3. Cửu Tam: 'Tiểu nhân dụng tráng' - Kẻ nhỏ dùng sức, quân tử không.\n4. Cửu Tứ: 'Trinh cát hối vong' - Kiên trì tốt, hối tiêu.\n5. Lục Ngũ: 'Thất dương' - Mất dê ở đồng, không hối.\n6. Thượng Lục: 'Dương đụng phiên' - Dê húc rào, không tiến thoái được."
+    }],
+    ["HỎA ĐỊA TẤN", { 
+        soThuTu: 35, 
+        yNghia: "Tiến lên, phát triển", 
+        tho: "Lửa trên đất tất sáng ngời\nĐức nhân tiến có mặt trời tâm soi.", 
+        giaiThich: "Quẻ Hỏa Địa Tấn biểu thị sự tiến lên, như lửa chiếu sáng trên đất. Đây là quẻ tốt, báo hiệu sự phát triển và thành công. Hãy giữ tâm sáng và hành động nhân đức để tiến xa.\n\n**Thoán từ**: 'Tấn: Khang hầu dụng tích mã phồn dục.' - Tiến, hầu được ban nhiều ngựa.\n\n**Hào từ**:\n1. Sơ Lục: 'Tấn như tồi như' - Tiến bị cản, kiên trì thì tốt.\n2. Lục Nhị: 'Tấn như sầu như' - Tiến mà buồn, kiên trì thì cát.\n3. Lục Tam: 'Chúng do tấn' - Được đám đông ủng hộ, tiến tốt.\n4. Cửu Tứ: 'Tấn như thử' - Tiến như chuột, kiên trì thì không lỗi.\n5. Lục Ngũ: 'Hối vong' - Hối tiêu, không mất gì, cát.\n6. Thượng Cửu: 'Tấn kỳ giác' - Tiến sừng, đánh thành thì hung."
+    }],
+    ["ĐỊA HỎA MINH DI", { 
+        soThuTu: 36, 
+        yNghia: "Tối tăm, ẩn mình", 
+        tho: "Lửa trong đất tất tối đi\nGiữ cho tâm sáng, Minh Di sá gì.", 
+        giaiThich: "Quẻ Địa Hỏa Minh Di biểu thị sự tối tăm, như lửa bị đất che khuất. Đây là thời điểm cần ẩn mình, giữ tâm sáng và tránh phô trương để bảo vệ bản thân trước khó khăn.\n\n**Thoán từ**: 'Minh Di: Lợi tại nạn trinh.' - Sáng trong tối, lợi khi kiên trì trong khó khăn.\n\n**Hào từ**:\n1. Sơ Cửu: 'Minh di vu phi' - Sáng trong tối khi bay, cụp cánh.\n2. Lục Nhị: 'Minh di thương phế' - Sáng trong tối, bị thương chân, tốt.\n3. Cửu Tam: 'Minh di vu nam săn' - Sáng trong tối khi săn phía nam, lớn.\n4. Lục Tứ: 'Nhập vu tả phúc' - Vào bụng trái, giữ tâm sáng.\n5. Lục Ngũ: 'Ký Công chi minh di' - Minh di của Ký Công, kiên trì thì lợi.\n6. Thượng Lục: 'Sơ đăng vu thiên' - Đầu lên trời, sau vào đất, hung."
+    }],
+    ["PHONG HỎA GIA NHÂN", { 
+        soThuTu: 37, 
+        yNghia: "Gia đình, trật tự", 
+        tho: "Lửa có gió tựa, người nhà\nNên lửa cháy lớn sáng lòa không gian.", 
+        giaiThich: "Quẻ Phong Hỏa Gia Nhân biểu thị sự hòa thuận trong gia đình, như gió giúp lửa cháy sáng. Đây là quẻ tốt, khuyến khích sự trật tự và yêu thương trong gia đình để đạt được hạnh phúc.\n\n**Thoán từ**: 'Gia Nhân: Lợi nữ trinh.' - Gia đình, lợi cho nữ kiên trì.\n\n**Hào từ**:\n1. Sơ Cửu: 'Nghiễn gia' - Giữ gia nghiêm, không hối.\n2. Lục Nhị: 'Vô du tuy' - Không đi đâu, ở nhà thì tốt.\n3. Cửu Tam: 'Gia nhân hiên hiên' - Gia đình nghiêm khắc, hối nhưng không hung.\n4. Lục Tứ: 'Phú gia đại cát' - Nhà giàu, rất tốt.\n5. Cửu Ngũ: 'Vương giả hữu gia' - Vua đến nhà, không lo, tốt.\n6. Thượng Cửu: 'Hữu phu uy như' - Có uy tín, tốt."
+    }],
+    ["HỎA TRẠCH KHUÊ", { 
+        soThuTu: 38, 
+        yNghia: "Đối lập, xung đột", 
+        tho: "Đầm dưới lửa tựa vào nhau\nChị em đối đầu nhưng vẫn chị em.", 
+        giaiThich: "Quẻ Hỏa Trạch Khuê biểu thị sự đối lập, như lửa và đầm không hòa hợp. Đây là thời điểm có mâu thuẫn, nhưng cần giữ tình thân và tìm cách hòa giải để vượt qua.\n\n**Thoán từ**: 'Khuê: Tiểu sự cát.' - Đối lập, việc nhỏ thì tốt.\n\n**Hào từ**:\n1. Sơ Cửu: 'Hối vong thất mã' - Hối tiêu, mất ngựa tự về.\n2. Cửu Nhị: 'Ngộ chủ vu hạng' - Gặp chủ trong hẻm, không lỗi.\n3. Lục Tam: 'Kéo xe trong bùn' - Xe bị kéo ngược, kiên trì thì qua.\n4. Cửu Tứ: 'Khuê cô' - Đối lập cô đơn, gặp bạn thì tốt.\n5. Lục Ngũ: 'Hối vong cắn thịt' - Hối tiêu, cắn thịt mà đi, tốt.\n6. Thượng Cửu: 'Khuê thấy heo bùn' - Đối lập thấy nguy, rồi tan, tốt."
+    }],
+    ["THỦY SƠN KIỂN", { 
+        soThuTu: 39, 
+        yNghia: "Trở ngại, khó khăn", 
+        tho: "Núi sau nước trước gian nan\nVượt qua khi đủ bền gan, đức tài.", 
+        giaiThich: "Quẻ Thủy Sơn Kiển biểu thị sự khó khăn, như nước chảy trước núi. Đây là thời điểm cần kiên nhẫn, bền bỉ và sử dụng trí tuệ để vượt qua trở ngại. Hãy giữ vững đạo đức.\n\n**Thoán từ**: 'Kiển: Lợi tây nam, bất lợi đông bắc.' - Khó khăn, lợi hướng tây nam.\n\n**Hào từ**:\n1. Sơ Lục: 'Vãng kiển lai dự' - Đi khó, về được khen.\n2. Lục Nhị: 'Vương thần kiển kiển' - Vua tôi khó khăn, không vì mình.\n3. Cửu Tam: 'Vãng kiển lai phản' - Đi khó, về lại, tốt.\n4. Lục Tứ: 'Vãng kiển lai liên' - Đi khó, về kết nối, tốt.\n5. Cửu Ngũ: 'Đại kiển bằng lai' - Khó lớn, bạn giúp, tốt.\n6. Thượng Lục: 'Vãng kiển lai ngự' - Đi khó, về được đón, cát."
+    }],
+    ["LÔI THỦY GIẢI", { 
+        soThuTu: 40, 
+        yNghia: "Giải tỏa, cởi bỏ", 
+        tho: "Sấm trên nước được giải nguy\nNguy tan, chăm sóc dân vì ấm no.", 
+        giaiThich: "Quẻ Lôi Thủy Giải biểu thị sự giải tỏa, như sấm làm tan nguy hiểm trên nước. Đây là quẻ tốt, báo hiệu sự kết thúc khó khăn. Hãy tận dụng thời cơ để chăm sóc và xây dựng lại.\n\n**Thoán từ**: 'Giải: Lợi tây nam, vô sở vãng.' - Giải thoát, lợi tây nam, không đi thì tốt.\n\n**Hào từ**:\n1. Sơ Lục: 'Vô cữu' - Không lỗi.\n2. Cửu Nhị: 'Điền hoạch tam hồ' - Săn được ba cáo, tốt.\n3. Lục Tam: 'Phụ mà thừa xa' - Mang gánh lên xe, gặp cướp.\n4. Cửu Tứ: 'Giải nhi chỉ' - Giải thoát ngón cái, bạn đến.\n5. Lục Ngũ: 'Quân tử duy hữu giải' - Quân tử giải thoát, cát.\n6. Thượng Lục: 'Công dụng xạ điêu' - Công bắn chim điêu, tốt."
+    }],
+    ["SƠN TRẠCH TỔN", { 
+        soThuTu: 41, 
+        yNghia: "Giảm bớt, tổn thất", 
+        tho: "Đất đầm tổn đắp núi cao\nGiảm đi tính xấu khác nào tốt tăng.", 
+        giaiThich: "Quẻ Sơn Trạch Tổn biểu thị sự giảm bớt, như đầm làm tổn đất để đắp núi. Đây là lời khuyên về việc hy sinh những điều không cần thiết để đạt được điều lớn lao hơn. Hãy bỏ bớt cái xấu để tăng cái tốt.\n\n**Thoán từ**: 'Tổn: Hữu phu, nguyên cát.' - Giảm bớt, có lòng tin thì rất tốt.\n\n**Hào từ**:\n1. Sơ Cửu: 'Tế sự vãng' - Lo việc xong rồi đi, không lỗi.\n2. Cửu Nhị: 'Lợi trinh bất tổn' - Kiên trì thì lợi, đừng giảm mình.\n3. Lục Tam: 'Tam nhân tổn nhất' - Ba người đi, giảm một, tốt.\n4. Lục Tứ: 'Tổn kỳ tật' - Giảm bệnh, vui vẻ, không lỗi.\n5. Lục Ngũ: 'Hoặc ích chi thập bằng' - Được ban mười đồng, đại cát.\n6. Thượng Cửu: 'Vô tổn ích chi' - Không giảm mà tăng, tốt."
+    }],
+    ["PHONG LÔI ÍCH", { 
+        soThuTu: 42, 
+        yNghia: "Tăng trưởng, lợi ích", 
+        tho: "Sấm gió giúp ích cho nhau\nCao ham giúp thấp, cao mau hơn nhiều.", 
+        giaiThich: "Quẻ Phong Lôi Ích biểu thị sự tăng trưởng, như sấm và gió hỗ trợ nhau. Đây là quẻ tốt, khuyến khích sự giúp đỡ lẫn nhau để cùng phát triển. Hãy hành động vì lợi ích chung.\n\n**Thoán từ**: 'Ích: Lợi hữu du vãng, lợi độ đại xuyên.' - Tăng trưởng, lợi khi đi và vượt sông lớn.\n\n**Hào từ**:\n1. Sơ Cửu: 'Lợi dụng vi đại tác' - Lợi làm việc lớn, đại cát.\n2. Lục Nhị: 'Hoặc ích chi thập bằng' - Được ban mười đồng, kiên trì thì tốt.\n3. Lục Tam: 'Ích chi dụng hung sự' - Tăng nhờ việc xấu, không lỗi.\n4. Cửu Tứ: 'Trung hành cáo công' - Đi giữa báo công, tốt.\n5. Lục Ngũ: 'Hữu phu huệ tâm' - Có lòng tin, nhân từ, cát.\n6. Thượng Cửu: 'Mạc ích chi' - Không ai tăng, bị đánh, hung."
+    }],
+    ["TRẠCH THIÊN QUẢI", { 
+        soThuTu: 43, 
+        yNghia: "Quyết đoán, dứt khoát", 
+        tho: "Đầm trời vỡ mọi đê ngăn\nKiên tâm tiến dưới trời dân tất thành.", 
+        giaiThich: "Quẻ Trạch Thiên Quải biểu thị sự quyết đoán, như đầm phá vỡ đê dưới trời. Đây là thời điểm cần hành động mạnh mẽ, dứt khoát để loại bỏ trở ngại. Hãy giữ tâm kiên định để thành công.\n\n**Thoán từ**: 'Quải: Dương vu vương đình, hanh.' - Quyết đoán ở triều vua, thuận.\n\n**Hào từ**:\n1. Sơ Cửu: 'Tráng vu tiền chỉ' - Mạnh ở ngón chân trước, đi thì hung.\n2. Cửu Nhị: 'Đề phòng ban đêm' - Cẩn thận đêm, không lo.\n3. Cửu Tam: 'Tráng vu quyến' - Mạnh ở má, hung, quân tử kiên trì.\n4. Cửu Tứ: 'Đồn vô phu' - Mông không da, đi khó.\n5. Cửu Ngũ: 'Phấn như quải như' - Quyết như cỏ phấn, tốt.\n6. Thượng Lục: 'Vô hào bất lợi' - Không kêu, bất lợi."
+    }],
+    ["THIÊN PHONG CẤU", { 
+        soThuTu: 44, 
+        yNghia: "Gặp gỡ bất ngờ", 
+        tho: "Gió kết trời thổi mọi phương\nDưới trên liên kết tỏa hương thơm đời.", 
+        giaiThich: "Quẻ Thiên Phong Cấu biểu thị sự gặp gỡ bất ngờ, như gió thổi dưới trời. Đây là quẻ nhắc nhở về việc cẩn trọng với những mối quan hệ mới, nhưng nếu biết tận dụng, sẽ mang lại điều tốt đẹp.\n\n**Thoán từ**: 'Cấu: Nữ tráng, vật dụng thú.' - Gặp nữ mạnh, không nên cưới.\n\n**Hào từ**:\n1. Sơ Lục: 'Hệ vu kim nị' - Buộc vào vòng đồng, kiên trì thì tốt.\n2. Cửu Nhị: 'Bao hữu ngư' - Trong bếp có cá, không lỗi.\n3. Cửu Tam: 'Đồn vô phu' - Mông không da, đi khó.\n4. Cửu Tứ: 'Bao vô ngư' - Không cá trong bếp, hung.\n5. Cửu Ngũ: 'Dĩ kỳ bao qua' - Dùng lá bọc dưa, giữ gìn thì tốt.\n6. Thượng Cửu: 'Cấu kỳ giác' - Gặp ở sừng, không lỗi."
+    }],
+    ["TRẠCH ĐỊA TỤY", { 
+        soThuTu: 45, 
+        yNghia: "Tụ họp, đoàn tụ", 
+        tho: "Đầm trên đất tụ vui hòa\nCó hương thơm ngát của hoa sen đời.", 
+        giaiThich: "Quẻ Trạch Địa Tụy biểu thị sự đoàn tụ, như đầm trên đất tạo nên vẻ đẹp. Đây là quẻ tốt, báo hiệu sự tụ họp vui vẻ và hòa hợp. Hãy trân trọng những mối quan hệ và cơ hội hợp tác.\n\n**Thoán từ**: 'Tụy: Hanh, vương giả chí hồ.' - Tụ họp thuận, vua đến hồ, lợi gặp đại nhân.\n\n**Hào từ**:\n1. Sơ Lục: 'Hữu phu bất chung' - Có lòng tin nhưng không xong, rối thì tốt.\n2. Lục Nhị: 'Khiên tụy cát' - Bị kéo tụ họp, tốt.\n3. Lục Tam: 'Tụy như thán như' - Tụ họp mà than, không lỗi.\n4. Cửu Tứ: 'Đại cát vô cữu' - Rất tốt, không lỗi.\n5. Cửu Ngũ: 'Tụy hữu vị' - Tụ họp có vị trí, không lỗi.\n6. Thượng Lục: 'Tê tụy lệ' - Than khóc tụ họp, không lỗi."
+    }],
+    ["ĐỊA PHONG THĂNG", { 
+        soThuTu: 46, 
+        yNghia: "Đi lên, thăng tiến", 
+        tho: "Đất trên gió có thăng thiên\nNgày ngày tích đức, người hiền ắt nên.", 
+        giaiThich: "Quẻ Địa Phong Thăng biểu thị sự thăng tiến, như gió nâng đất lên cao. Đây là quẻ tốt, báo hiệu sự phát triển và thành công. Hãy tiếp tục tích đức và làm việc chăm chỉ để tiến xa.\n\n**Thoán từ**: 'Thăng: Nguyên hanh, dụng kiến đại nhân.' - Thăng tiến rất thuận, gặp đại nhân thì lợi.\n\n**Hào từ**:\n1. Sơ Lục: 'Doãn thăng đại cát' - Cho phép thăng, rất tốt.\n2. Cửu Nhị: 'Hữu phu bất nghi' - Có lòng tin, không nghi, tốt.\n3. Cửu Tam: 'Thăng hư ấp' - Lên thành trống, không ngại.\n4. Lục Tứ: 'Vương dụng hanh vu Kỳ Sơn' - Vua tế ở Kỳ Sơn, tốt.\n5. Lục Ngũ: 'Trinh cát thăng giai' - Kiên trì tốt, lên bậc, cát.\n6. Thượng Lục: 'Mê thăng' - Thăng trong tối, kiên trì thì lợi."
+    }],
+    ["TRẠCH THỦY KHỐN", { 
+        soThuTu: 47, 
+        yNghia: "Khốn đốn, khó khăn", 
+        tho: "Nước dưới đầm có khốn nguy\nTrung trinh vui vẻ sá gì không qua.", 
+        giaiThich: "Quẻ Trạch Thủy Khốn biểu thị sự khó khăn, như nước bị đầm vây hãm. Đây là thời điểm thử thách, nhưng nếu giữ tâm trung trinh và lạc quan, bạn sẽ vượt qua. Hãy kiên nhẫn và giữ vững niềm tin.\n\n**Thoán từ**: 'Khốn: Hanh, trinh, đại nhân cát.' - Khốn khó mà thuận, kiên trì thì tốt.\n\n**Hào từ**:\n1. Sơ Lục: 'Đồn vu cốc' - Ngồi dưới gốc cây, vào thung tối, hung.\n2. Cửu Nhị: 'Khốn vu tửu thực' - Khốn trong rượu thịt, tốt nếu chính.\n3. Lục Tam: 'Khốn vu thạch' - Khốn trên đá, dựa cây gai, hung.\n4. Cửu Tứ: 'Lai xu chi' - Đến chậm, khốn trên xe, tốt sau.\n5. Cửu Ngũ: 'Tị khốn' - Mũi bị cắt, khốn, rồi giải thoát.\n6. Thượng Lục: 'Khốn vu cát' - Khốn trong dây leo, động thì nguy."
+    }],
+    ["THỦY PHONG TỈNH", { 
+        soThuTu: 48, 
+        yNghia: "Giếng nước, nguồn nuôi dưỡng", 
+        tho: "Nước nguồn trời đất, gàu phong\nGiếng lòng đầy ngọc, miệng không nói gì.", 
+        giaiThich: "Quẻ Thủy Phong Tỉnh biểu thị nguồn nuôi dưỡng, như giếng nước trong lành. Đây là quẻ nhắc nhở về việc giữ gìn nguồn lực và chia sẻ với người khác. Hãy làm việc vì lợi ích cộng đồng.\n\n**Thoán từ**: 'Tỉnh: Tu tỉnh, hanh.' - Sửa giếng thì thuận.\n\n**Hào từ**:\n1. Sơ Lục: 'Tỉnh nê bất thực' - Giếng bùn không uống được, xấu.\n2. Cửu Nhị: 'Tỉnh cốc xạ ngư' - Giếng sâu bắn cá, hỏng gàu.\n3. Cửu Tam: 'Tỉnh tuế bất thực' - Giếng sạch không dùng, đáng tiếc.\n4. Lục Tứ: 'Tỉnh lũ vô cữu' - Sửa giếng lát gạch, không lỗi.\n5. Cửu Ngũ: 'Tỉnh liệt hàn tuyền' - Giếng trong suối mát, tốt.\n6. Thượng Lục: 'Tỉnh thu bất nắp' - Giếng xong không đậy, đại cát."
+    }],
+    ["TRẠCH HỎA CÁCH", { 
+        soThuTu: 49, 
+        yNghia: "Thay đổi, cách tân", 
+        tho: "Đầm trên lửa chứa đổi thay\nSáng ngời, vui thuận ắt xây mới thành.", 
+        giaiThich: "Quẻ Trạch Hỏa Cách biểu thị sự thay đổi, như lửa làm sôi nước trong đầm. Đây là thời điểm cần cải cách, thay đổi để tiến bộ. Hãy hành động sáng suốt và thuận theo ý dân để thành công.\n\n**Thoán từ**: 'Cách: Kỷ nhật nãi cách, hanh.' - Ngày kỷ mới thay đổi, thuận.\n\n**Hào từ**:\n1. Sơ Cửu: 'Củng dụng hoàng ngưu chi cách' - Buộc bằng da trâu vàng, chưa đổi.\n2. Lục Nhị: 'Kỷ nhật nãi cách' - Ngày kỷ thay đổi, tốt.\n3. Cửu Tam: 'Chinh hung trinh lệ' - Đi thì hung, kiên trì thì nguy.\n4. Cửu Tứ: 'Hối vong hữu phu' - Hối tiêu, có lòng tin, đổi tốt.\n5. Cửu Ngũ: 'Đại nhân hổ biến' - Đại nhân đổi như hổ, tốt.\n6. Thượng Lục: 'Quân tử báo biến' - Quân tử đổi như báo, tiểu nhân đổi mặt."
+    }],["HỎA PHONG ĐỈNH", { 
+        soThuTu: 50, 
+        yNghia: "Đỉnh, sự nghiệp vững chắc", 
+        tho: "Lửa có gió, đỉnh sôi liền\nĐức, nhân, hòa, sáng đại hiền chăm dân.", 
+        giaiThich: "Quẻ Hỏa Phong Đỉnh biểu thị sự vững chắc, như cái đỉnh được lửa và gió hỗ trợ. Đây là quẻ tốt, báo hiệu sự nghiệp thành công và ổn định. Hãy giữ đức hạnh và chăm lo cho người khác để duy trì thành tựu. \n\n**Thoán từ**: 'Đỉnh: Nguyên, Hanh, Lợi.' - Khởi nguồn vĩ đại, thông suốt, có lợi. \n\n**Hào từ**: \n1. Sơ Lục: 'Đỉnh phu cước' - Đỉnh lật ngược chân, loại bỏ xấu để làm mới. \n2. Cửu Nhị: 'Đỉnh hữu thực' - Đỉnh chứa thức ăn, đầy đủ và hài hòa. \n3. Cửu Tam: 'Đỉnh nhĩ cách' - Tay cầm đỉnh đứt, cần cẩn thận kẻo mất thành quả. \n4. Cửu Tứ: 'Đỉnh chiết túc' - Đỉnh gãy chân, sự nghiệp gặp khó, cần sửa chữa. \n5. Lục Ngũ: 'Hoàng đỉnh nguyên cát' - Đỉnh vàng đại cát, đạt thành công nhờ đức hạnh. \n6. Thượng Cửu: 'Ngọc đỉnh đại cát' - Đỉnh ngọc quý, sự nghiệp vững vàng, rất tốt."
+    }],
+    ["THUẦN CHẤN", { 
+        soThuTu: 51, 
+        yNghia: "Sấm, hành động", 
+        tho: "Sấm sấm chấn động đất trời\nDũng nhân trí giữ, có cười sấm qua.", 
+        giaiThich: "Quẻ Thuần Chấn biểu thị sự hành động, như sấm vang chấn động. Đây là thời điểm cần dũng cảm, quyết đoán để tạo ra thay đổi. Hãy giữ tâm trí sáng suốt để vượt qua thử thách. \n\n**Thoán từ**: 'Chấn: Hanh. Chấn lai hãi hãi, tiếu ngôn ngận ngận.' - Thông suốt, sấm đến khiến sợ hãi, sau đó cười nói vui vẻ. \n\n**Hào từ**: \n1. Sơ Cửu: 'Chấn lai hãi hãi' - Sấm đến khiến sợ hãi, sau đó cát lành. \n2. Lục Nhị: 'Chấn lai lệ' - Sấm đến nguy hiểm, mất của nhưng tránh được họa. \n3. Lục Tam: 'Chấn tố tố' - Sấm làm hoảng loạn, giữ vững sẽ không lỗi. \n4. Cửu Tứ: 'Chấn tụy nê' - Sấm rơi vào bùn, bất động, cần thay đổi. \n5. Lục Ngũ: 'Chấn vãng lai lệ' - Sấm qua lại nguy hiểm, giữ trung đạo sẽ an. \n6. Thượng Lục: 'Chấn sách sách' - Sấm khiến run sợ, chưa ổn, cần cẩn thận."
+    }],
+    ["THUẦN CẤN", { 
+        soThuTu: 52, 
+        yNghia: "Núi, tĩnh tại", 
+        tho: "Núi chồng núi mới to cao\nTrong lòng ngọc tĩnh, ngăn bao bạo tàn.", 
+        giaiThich: "Quẻ Thuần Cấn biểu thị sự tĩnh tại, như núi đứng vững. Đây là lời khuyên về việc giữ tâm bình thản, tập trung vào nội tâm để tránh bị ảnh hưởng bởi những biến động bên ngoài. \n\n**Thoán từ**: 'Cấn: Chỉ kỳ bối, bất hoạch kỳ thân.' - Dừng ở lưng, không thấy thân, tĩnh tại. \n\n**Hào từ**: \n1. Sơ Lục: 'Chỉ kỳ chỉ' - Dừng ở ngón chân, chưa tiến, không lỗi. \n2. Lục Nhị: 'Chỉ kỳ phì' - Dừng ở bắp chân, muốn tiến nhưng chưa được. \n3. Cửu Tam: 'Chỉ kỳ hạn' - Dừng ở hông, căng thẳng, cần thư giãn. \n4. Lục Tứ: 'Chỉ kỳ thân' - Dừng ở thân, giữ vững, không lỗi. \n5. Lục Ngũ: 'Chỉ kỳ phụ' - Dừng ở miệng, nói ít, tránh họa. \n6. Thượng Cửu: 'Đôn cấn cát' - Tĩnh tại chân thành, tốt lành."
+    }],
+    ["PHONG SƠN TIỆM", { 
+        soThuTu: 53, 
+        yNghia: "Tiến dần, tuần tự", 
+        tho: "Cây trên núi từ từ cao\nNgày ngày tích đức như bao người hiền.", 
+        giaiThich: "Quẻ Phong Sơn Tiệm biểu thị sự tiến triển dần dần, như cây mọc trên núi. Đây là quẻ khuyến khích sự kiên trì, làm việc tuần tự để đạt được thành công lâu dài. Hãy giữ vững đạo đức. \n\n**Thoán từ**: 'Tiệm: Nữ quy cát, lợi trinh.' - Con gái về nhà chồng tốt, lợi khi kiên trì. \n\n**Hào từ**: \n1. Sơ Lục: 'Nhạn tiệm vu thạch' - Chim nhạn dần tới đá, khởi đầu khó khăn. \n2. Lục Nhị: 'Nhạn tiệm vu bàn' - Chim nhạn dần tới gò, ổn định, cát. \n3. Cửu Tam: 'Nhạn tiệm vu lục' - Chim nhạn dần tới đất, nguy hiểm, cần cẩn thận. \n4. Lục Tứ: 'Nhạn tiệm vu mộc' - Chim nhạn dần tới cây, an ổn, tốt. \n5. Cửu Ngũ: 'Nhạn tiệm vu lăng' - Chim nhạn dần tới đỉnh, thành công sau nỗ lực. \n6. Thượng Cửu: 'Nhạn tiệm vu thiên' - Chim nhạn dần tới trời, hoàn thành, đại cát."
+    }],
+    ["LÔI TRẠCH QUY MUỘI", { 
+        soThuTu: 54, 
+        yNghia: "Cô gái về nhà chồng", 
+        tho: "Thương em gái nhỏ vu quy\nVề với sấm sét lấy gì giữ vui.", 
+        giaiThich: "Quẻ Lôi Trạch Quy Muội biểu thị sự kết hôn không thuận, như cô gái trẻ về nhà chồng gặp sấm sét. Đây là lời cảnh báo về việc cẩn trọng trong các mối quan hệ, tránh vội vàng để không gặp bất lợi. \n\n**Thoán từ**: 'Quy Muội: Chinh hung, vô du lợi.' - Đi xa thì xấu, không có lợi. \n\n**Hào từ**: \n1. Sơ Cửu: 'Quy muội dĩ tỳ' - Gả em làm thiếp, khiêm nhường, tốt. \n2. Cửu Nhị: 'Biền đãn hữu quang' - Một mắt vẫn sáng, kiên trì sẽ ổn. \n3. Lục Tam: 'Quy muội dĩ thi' - Gả em làm hầu, thấp kém, không tốt. \n4. Cửu Tứ: 'Quy muội du kỳ' - Gả em chậm trễ, chờ thời cơ. \n5. Lục Ngũ: 'Đế Ất quy muội' - Vua Ất gả em, cao quý, cát. \n6. Thượng Lục: 'Nữ thừa khuông' - Người nữ mang sọt rỗng, không thực chất, hung."
+    }],
+    ["LÔI HỎA PHONG", { 
+        soThuTu: 55, 
+        yNghia: "Sung mãn, thịnh vượng", 
+        tho: "Sấm động, lửa sáng gặp nhau\nTất nhiên thịnh lớn, chẳng cầu mà nên.", 
+        giaiThich: "Quẻ Lôi Hỏa Phong biểu thị sự thịnh vượng, như sấm và lửa cùng sáng. Đây là quẻ tốt, báo hiệu thời kỳ sung mãn. Tuy nhiên, cần cẩn trọng vì thịnh cực thì suy, hãy chuẩn bị cho tương lai. \n\n**Thoán từ**: 'Phong: Hanh. Vương giả chí, vật ai.' - Thông suốt, vua đến, không buồn. \n\n**Hào từ**: \n1. Sơ Cửu: 'Ngộ chủ hữu ngôn' - Gặp chủ có lời, hợp tác tốt. \n2. Lục Nhị: 'Phong kỳ bồng' - Sung mãn như rèm che, nghi ngờ, cần sáng tỏ. \n3. Cửu Tam: 'Phong kỳ bái' - Sung mãn gãy tay, tổn thất nhỏ, không lỗi. \n4. Cửu Tứ: 'Phong kỳ bồng' - Sung mãn như rèm, gặp bạn tốt, cát. \n5. Lục Ngũ: 'Lai chương hữu khánh' - Được khen ngợi, có phúc, đại cát. \n6. Thượng Lục: 'Phong kỳ ốc' - Sung mãn che nhà, cô lập, hung."
+    }],
+    ["HỎA SƠN LỮ", { 
+        soThuTu: 56, 
+        yNghia: "Khách, lữ hành", 
+        tho: "Lửa trên núi, lửa ở nhờ\nGiữ mình cho sáng và thờ cao sơn.", 
+        giaiThich: "Quẻ Hỏa Sơn Lữ biểu thị sự lữ hành, như lửa cháy trên núi. Đây là thời điểm bạn ở vị trí khách, cần giữ tâm sáng và hành động đúng mực để được đón nhận và bảo vệ. \n\n**Thoán từ**: 'Lữ: Tiểu hanh.' - Lữ hành nhỏ thông suốt. \n\n**Hào từ**: \n1. Sơ Lục: 'Lữ toái toái' - Lữ hành nhỏ nhặt, tự làm khó mình, hung. \n2. Lục Nhị: 'Lữ chí thứ' - Lữ hành đến trạm, an ổn, cát. \n3. Cửu Tam: 'Lữ phần thứ' - Lữ hành đốt trạm, mất chỗ dựa, hung. \n4. Cửu Tứ: 'Lữ chí bạch' - Lữ hành có chỗ ở, chưa yên, cần cố gắng. \n5. Lục Ngũ: 'Xạ trĩ nhất thỉ' - Bắn chim trĩ mất tên, cuối cùng vẫn được khen. \n6. Thượng Cửu: 'Điểu phần kỳ sào' - Chim đốt tổ, lữ hành mất hết, hung."
+    }],
+    ["THUẦN TỐN", { 
+        soThuTu: 57, 
+        yNghia: "Gió, nhu thuận", 
+        tho: "Gió gió hòa nhập mạnh lên\nChớ gây bão tố mà nên mát lành.", 
+        giaiThich: "Quẻ Thuần Tốn biểu thị sự nhu thuận, như gió nhẹ thổi. Đây là lời khuyên về việc hành động mềm dẻo, linh hoạt để đạt được mục tiêu. Tránh gây xung đột, hãy giữ sự hòa nhã. \n\n**Thoán từ**: 'Tốn: Tiểu hanh, lợi hữu du vãng.' - Nhu thuận nhỏ thông suốt, lợi khi đi xa. \n\n**Hào từ**: \n1. Sơ Lục: 'Tiến thoái' - Tiến lui do dự, cần kiên định. \n2. Cửu Nhị: 'Tốn tại sàng hạ' - Nhu thuận dưới giường, gặp người tốt, cát. \n3. Cửu Tam: 'Tần tốn' - Nhu thuận lặp lại, hối hận, không tốt. \n4. Lục Tứ: 'Hối vong, điền hoạch tam phẩm' - Hối tiếc tan, săn được ba phẩm vật, cát. \n5. Cửu Ngũ: 'Trinh cát, hối vong' - Kiên trì tốt, không hối tiếc, đại cát. \n6. Thượng Lục: 'Tốn tại sàng hạ' - Nhu thuận quá mức, mất của, hung."
+    }],
+    ["THUẦN ĐOÀI", { 
+        soThuTu: 58, 
+        yNghia: "Đầm, vui vẻ", 
+        tho: "Đoài toàn xinh đẹp, vui tươi\nNuôi hoa sen nở soi đời gương hương.", 
+        giaiThich: "Quẻ Thuần Đoài biểu thị sự vui vẻ, như đầm nước trong lành. Đây là quẻ tốt, báo hiệu niềm vui và sự hòa hợp. Hãy lan tỏa niềm vui và giữ tâm trong sáng để thu hút điều tốt đẹp. \n\n**Thoán từ**: 'Đoài: Hanh, lợi trinh.' - Thông suốt, lợi khi kiên trì. \n\n**Hào từ**: \n1. Sơ Cửu: 'Hòa đoài cát' - Hòa hợp vui vẻ, tốt lành. \n2. Cửu Nhị: 'Phu đoài cát' - Thành tín vui vẻ, tốt, không hối tiếc. \n3. Lục Tam: 'Lai đoài hung' - Vui vẻ đến từ ngoài, nguy hiểm. \n4. Cửu Tứ: 'Thương đoài' - Đàm phán vui vẻ, chưa yên, cần cẩn thận. \n5. Cửu Ngũ: 'Phu vu bóc' - Thành tín với kẻ xấu, nguy hiểm. \n6. Thượng Lục: 'Dẫn đoài' - Dẫn dắt vui vẻ, trung bình, không lỗi."
+    }],
+    ["PHONG THỦY HOÁN", { 
+        soThuTu: 59, 
+        yNghia: "Phân tán, ly tán", 
+        tho: "Nước dưới gió có sóng lan\nPhân ra, thuyền Tốn vượt ngàn hiểm nguy.", 
+        giaiThich: "Quẻ Phong Thủy Hoán biểu thị sự phân tán, như gió làm sóng nước lan xa. Đây là thời điểm cần cẩn trọng với sự chia rẽ, nhưng nếu biết tận dụng, có thể vượt qua khó khăn để tiến lên. \n\n**Thoán từ**: 'Hoán: Hanh. Vương giả chí, lợi thiệp đại xuyên.' - Thông suốt, vua đến, lợi khi vượt sông lớn. \n\n**Hào từ**: \n1. Sơ Lục: 'Dụng cứu mã tráng' - Dùng ngựa cứu giúp, mạnh mẽ, cát. \n2. Cửu Nhị: 'Hoán kỳ độn' - Phân tán chạy trốn, dựa vào đồi, không lỗi. \n3. Lục Tam: 'Hoán kỳ cung' - Phân tán thân mình, không hối tiếc. \n4. Lục Tứ: 'Hoán kỳ quần' - Phân tán đám đông, đại cát. \n5. Cửu Ngũ: 'Hoán hãn đại hào' - Phân tán lớn lao, kêu gọi, tốt. \n6. Thượng Cửu: 'Hoán kỳ huyết' - Phân tán máu, tránh xa, không lỗi."
+    }],
+    ["THỦY TRẠCH TIẾT", { 
+        soThuTu: 60, 
+        yNghia: "Tiết chế, giới hạn", 
+        tho: "Tiết chế lượng nước trong đầm\nThì sen mới nở hàng năm cho đời.", 
+        giaiThich: "Quẻ Thủy Trạch Tiết biểu thị sự tiết chế, như nước trong đầm được kiểm soát. Đây là lời khuyên về việc đặt giới hạn, không làm quá mức để giữ sự cân bằng và bền vững. \n\n**Thoán từ**: 'Tiết: Hanh. Khổ tiết bất khả trinh.' - Thông suốt, tiết chế quá khổ thì không nên kiên trì. \n\n**Hào từ**: \n1. Sơ Cửu: 'Bất xuất hộ đình' - Không ra khỏi sân, không lỗi. \n2. Cửu Nhị: 'Bất xuất môn đình' - Không ra khỏi cửa, hung. \n3. Lục Tam: 'Bất tiết tắc thán' - Không tiết chế thì than thở, có lỗi. \n4. Lục Tứ: 'An tiết hanh' - Tiết chế yên ổn, thông suốt. \n5. Cửu Ngũ: 'Cam tiết cát' - Tiết chế ngọt ngào, tốt, đi xa có công. \n6. Thượng Lục: 'Khổ tiết trinh hung' - Tiết chế quá khổ, kiên trì thì xấu."
+    }],
+    ["PHONG TRẠCH TRUNG PHU", { 
+        soThuTu: 61, 
+        yNghia: "Trung thực, thành tín", 
+        tho: "Trên đầm gió có đức tin\nHoa sen nở, gió đưa nghìn trùng thơm.", 
+        giaiThich: "Quẻ Phong Trạch Trung Phu biểu thị sự trung thực, như gió thổi trên đầm làm hoa sen tỏa hương. Đây là quẻ khuyến khích sự thành tín, giữ lời hứa để xây dựng lòng tin và thành công. \n\n**Thoán từ**: 'Trung Phu: Trư ngư cát, lợi thiệp đại xuyên.' - Thành tín tốt như heo cá, lợi khi vượt sông lớn. \n\n**Hào từ**: \n1. Sơ Cửu: 'Dự bị cát' - Chuẩn bị trước, tốt, không lỗi. \n2. Cửu Nhị: 'Hạc minh tại âm' - H crane kêu trong bóng tối, thành tín lan xa, cát. \n3. Lục Tam: 'Đắc địch hoặc cổ' - Gặp địch hoặc đánh trống, bất ổn, không tốt. \n4. Lục Tứ: 'Nguyệt cơ vọng' - Trăng gần tròn, mất bạn, không lỗi. \n5. Cửu Ngũ: 'Hữu phu bất chung' - Có thành tín không dứt, đại cát. \n6. Thượng Cửu: 'Hàn âm đăng thiên' - Gà kêu lên trời, kiêu ngạo, hung."
+    }],
+    ["LÔI SƠN TIỂU QUÁ", { 
+        soThuTu: 62, 
+        yNghia: "Quá nhỏ, sai lệch nhỏ", 
+        tho: "Sấm trên đầu núi, thấp hèn\nHam danh tiếng hảo, nhỏ nhen đen đời.", 
+        giaiThich: "Quẻ Lôi Sơn Tiểu Quá biểu thị sự sai lệch nhỏ, như sấm vang trên núi thấp. Đây là lời cảnh báo về việc tránh tham lam danh tiếng, hãy giữ tâm khiêm tốn và hành động đúng mực. \n\n**Thoán từ**: 'Tiểu Quá: Hanh. Lợi trinh, khả tiểu sự.' - Thông suốt, lợi khi kiên trì, chỉ làm việc nhỏ. \n\n**Hào từ**: \n1. Sơ Lục: 'Phi điểu dĩ hung' - Chim bay gặp họa, không nên vượt quá. \n2. Lục Nhị: 'Quá kỳ tổ' - Vượt qua tổ, gặp mẹ, không lỗi, cát. \n3. Cửu Tam: 'Phất quá phòng chi' - Không vượt quá phòng thủ, đề phòng kẻo hung. \n4. Cửu Tứ: 'Vô cữu, phất quá' - Không lỗi, không vượt quá, cát. \n5. Lục Ngũ: 'Mật vân bất vũ' - Mây dày không mưa, chưa thành, cần chờ. \n6. Thượng Lục: 'Phất ngộ quá chi' - Không gặp mà vượt quá, bay cao gặp họa, hung."
+    }],
+    ["THỦY HỎA KÝ TẾ", { 
+        soThuTu: 63, 
+        yNghia: "Đã hoàn thành, thành công", 
+        tho: "Nước trên lửa tựa nhau thành\nGiao hòa lửa nước nên hành tinh xanh.", 
+        giaiThich: "Quẻ Thủy Hỏa Ký Tế biểu thị sự hoàn thành, như nước và lửa giao hòa. Đây là quẻ tốt, báo hiệu sự thành công. Tuy nhiên, cần cẩn trọng vì sau khi hoàn thành, dễ sinh ra lơ là. \n\n**Thoán từ**: 'Ký Tế: Hanh, lợi trinh, sơ cát chung loạn.' - Thông suốt, lợi khi kiên trì, đầu tốt cuối rối. \n\n**Hào từ**: \n1. Sơ Cửu: 'Du kỳ luân' - Kéo bánh xe, ướt đuôi, không lỗi. \n2. Lục Nhị: 'Phụ thất kỳ phất' - Người phụ nữ mất khăn, chờ sẽ có lại, cát. \n3. Cửu Tam: 'Cao Tông phạt Quỷ Phương' - Vua đánh Quỷ Phương, ba năm mới thắng, kiên trì. \n4. Lục Tứ: 'Nhu hữu y' - Thuyền có áo chống thấm, cẩn thận cả ngày, cát. \n5. Cửu Ngũ: 'Đông lân sát ngưu' - Hàng xóm phía đông giết bò, thành tín nhỏ tốt hơn lễ lớn. \n6. Thượng Lục: 'Nhu kỳ thủ' - Ướt đầu, nguy hiểm, cần đề phòng."
+    }],
+    ["HỎA THỦY VỊ TẾ", { 
+        soThuTu: 64, 
+        yNghia: "Chưa hoàn thành, còn dang dở", 
+        tho: "Lửa trên nước rước việc đời\nTrong trời đất cứ luân hồi hóa sinh.", 
+        giaiThich: "Quẻ Hỏa Thủy Vị Tế biểu thị sự chưa hoàn thành, như lửa và nước chưa hòa hợp. Đây là quẻ nhắc nhở về việc cần tiếp tục nỗ lực, cẩn trọng để hoàn thành công việc còn dang dở. \n\n**Thoán từ**: 'Vị Tế: Hanh. Tiểu hồ thiệp đại xuyên.' - Thông suốt, cáo nhỏ vượt sông lớn, thành công. \n\n**Hào từ**: \n1. Sơ Lục: 'Nhu kỳ vĩ' - Ướt đuôi, vội vàng gặp hung. \n2. Cửu Nhị: 'Du kỳ luân' - Kéo bánh xe, kiên trì, cát. \n3. Lục Tam: 'Vị tế chinh hung' - Chưa xong mà đi xa thì xấu, cần chuẩn bị. \n4. Cửu Tứ: 'Trinh cát hối vong' - Kiên trì tốt, không hối tiếc, đánh địch thắng. \n5. Lục Ngũ: 'Trinh cát vô hối' - Kiên trì tốt, không hối tiếc, sáng tỏ như君子. \n6. Thượng Cửu: 'Hữu phu ư ẩm tửu' - Thành tín uống rượu, không lỗi, nhưng ướt đầu thì mất."
+    }]
+]);
 
         const drawButton = document.getElementById("drawButton");
         const card = document.getElementById("card");

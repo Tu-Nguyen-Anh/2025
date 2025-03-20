@@ -1,38 +1,597 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nguyen Anh Tu</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Rút Bài Xem Quẻ Kinh Dịch</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .warning {
+            color: #e74c3c;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .card-container {
+            perspective: 1000px;
+            margin-bottom: 20px;
+        }
+        .card {
+            width: 300px;
+            height: 450px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease-in-out;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card-front {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        .card-back {
+            background: linear-gradient(45deg, #4834d4, #686de0);
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 1em;
+            text-align: center;
+            overflow-y: auto;
+        }
+        .card-back h3 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        .card-back p {
+            font-size: 0.9em;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        .card-back .poem {
+            font-style: italic;
+            margin-bottom: 10px;
+            white-space: pre-wrap;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 25px;
+            background: #6ab04c;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, background 0.3s;
+            margin-top: 20px;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            background: #5c9b3d;
+        }
+        .timer {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <div class="calendar-container">
-        <div class="calendar-header">
-            <h1>2025</h1>
-        </div>
-        <div class="calendar">
-            <div class="date-box">
-                <span id="days" class="number">00</span>
-                <p>Ngày</p>
+    <h1>Rút Bài Xem Quẻ Kinh Dịch</h1>
+    <div class="card-container">
+        <div class="card" id="card">
+            <div class="card-front">Rút Bài</div>
+            <div class="card-back" id="cardBack">
+                <h3 id="hexagramName">---</h3>
+                <p id="hexagramOrder">---</p>
+                <p id="hexagramMeaning">---</p>
+                <p class="poem" id="hexagramPoem">---</p>
+                <p id="hexagramDetail">---</p>
             </div>
-            <div class="date-box">
-                <span id="hours" class="number">00</span>
-                <p>Giờ</p>
-            </div>
-            <div class="date-box">
-                <span id="minutes" class="number">00</span>
-                <p>Phút</p>
-            </div>
-            <div class="date-box">
-                <span id="seconds" class="number">00</span>
-                <p>Giây</p>
-            </div>
-        </div>
-        <div class="footer">
-            <p>2025 🎉</p>
         </div>
     </div>
-    <script src="script.js"></script>
+    <button id="drawButton" onclick="drawCard()">Rút Bài</button>
+    <div class="timer" id="timer">---</div>
+
+    <script>
+        const giaiThichQue = new Map([
+            ["THUẦN CÀN", { 
+                soThuTu: 1, 
+                yNghia: "Sáng tạo, mạnh mẽ, trời", 
+                tho: "Trời ôm trời, cao cả thành\nLàm cha Nguyên, Lợi, Trinh, Hanh, mạnh cường.", 
+                giaiThich: "Quẻ Thuần Càn tượng trưng cho trời, biểu thị sự sáng tạo, mạnh mẽ và quyền lực tối cao. Đây là quẻ của sự khởi đầu, khuyến khích hành động quyết đoán, chính trực và bền bỉ. Người nhận quẻ này nên giữ vững đạo đức, hành động đúng đắn để đạt được thành công lớn."
+            }],
+            ["THUẦN KHÔN", { 
+                soThuTu: 2, 
+                yNghia: "Tiếp nhận, nhu thuận, đất", 
+                tho: "Đất ôm đất, mẹ yêu cha\nBao dung, nhu thuận, thái hòa, sinh nuôi.", 
+                giaiThich: "Quẻ Thuần Khôn tượng trưng cho đất, biểu thị sự bao dung, nhu thuận và nuôi dưỡng. Đây là quẻ của sự tiếp nhận, khuyến khích sự kiên nhẫn, khiêm tốn và hỗ trợ người khác. Người nhận quẻ này nên học cách nhẫn nại và làm việc vì lợi ích chung."
+            }],
+            ["THỦY LÔI TRUÂN", { 
+                soThuTu: 3, 
+                yNghia: "Khởi đầu khó khăn", 
+                tho: "Nước trên sấm lắm gian truân\nMưa to tạnh, có ân nhân giúp đời.", 
+                giaiThich: "Quẻ Thủy Lôi Truân biểu thị sự khó khăn ban đầu, như mầm non mới nhú gặp mưa sấm. Dù khó khăn, nhưng nếu kiên trì và có sự giúp đỡ từ người khác, bạn sẽ vượt qua và phát triển. Hãy kiên nhẫn và tìm kiếm sự hỗ trợ."
+            }],
+            ["SƠN THỦY MÔNG", { 
+                soThuTu: 4, 
+                yNghia: "Non trẻ, ngu muội", 
+                tho: "Âm u thủy khởi sơn đầu\nNâng khơi chính đạo, sông sâu núi dài.", 
+                giaiThich: "Quẻ Sơn Thủy Mông biểu thị sự non trẻ, chưa hiểu biết, như dòng nước chảy dưới núi. Đây là thời điểm cần học hỏi, tìm kiếm sự hướng dẫn từ người đi trước để khai sáng con đường chính đạo. Hãy khiêm tốn và cầu tiến."
+            }],
+            ["THỦY THIÊN NHU", { 
+                soThuTu: 5, 
+                yNghia: "Kiên nhẫn chờ đợi", 
+                tho: "Nước đang đổ xuống đầu trời\nThiện kiên nhẫn đợi, thiên thời dành cho.", 
+                giaiThich: "Quẻ Thủy Thiên Nhu biểu thị sự chờ đợi thời cơ, như nước trên trời chưa thể rơi ngay. Đây là lời khuyên về sự kiên nhẫn, chờ đợi đúng thời điểm để hành động. Hãy giữ vững niềm tin và chuẩn bị kỹ lưỡng."
+            }],
+            ["THIÊN THỦY TỤNG", { 
+                soThuTu: 6, 
+                yNghia: "Tranh chấp, kiện tụng", 
+                tho: "Thấp cao, to nhỏ khó hòa\nTranh nhau, kiện tụng bỏ qua ắt thành.", 
+                giaiThich: "Quẻ Thiên Thủy Tụng biểu thị sự tranh chấp, mâu thuẫn, như trời và nước không hòa hợp. Để vượt qua, cần tránh đối đầu trực diện, tìm cách hòa giải và nhượng bộ. Hãy giữ tâm bình thản để giải quyết vấn đề."
+            }],
+            ["ĐỊA THỦY SƯ", { 
+                soThuTu: 7, 
+                yNghia: "Quân đội, kỷ luật", 
+                tho: "Đất ngăn nước tạo nên hồ\nRa quân trị thủy để cho dân giàu.", 
+                giaiThich: "Quẻ Địa Thủy Sư biểu thị sự đoàn kết và kỷ luật, như quân đội được tổ chức chặt chẽ. Đây là thời điểm cần sự lãnh đạo sáng suốt và tinh thần tập thể để vượt qua khó khăn. Hãy hành động có kế hoạch và trật tự."
+            }],
+            ["THỦY ĐỊA TỈ", { 
+                soThuTu: 8, 
+                yNghia: "Đoàn kết, hòa hợp", 
+                tho: "Nước trên đất dưới bùn đen\nGiao hòa đất nước nuôi sen cho đời.", 
+                giaiThich: "Quẻ Thủy Địa Tỉ biểu thị sự hòa hợp, như nước và đất cùng nuôi dưỡng sự sống. Đây là quẻ của sự đoàn kết, khuyến khích sự hợp tác và hỗ trợ lẫn nhau. Hãy xây dựng mối quan hệ tốt đẹp để cùng phát triển."
+            }],
+            ["PHONG THIÊN TIỂU SÚC", { 
+                soThuTu: 9, 
+                yNghia: "Tích lũy nhỏ", 
+                tho: "Hiu hiu gió thổi đầu trời\nGió nuôi mát mẻ, chớ nuôi bão bùng.", 
+                giaiThich: "Quẻ Phong Thiên Tiểu Súc biểu thị sự tích lũy từng chút một, như gió nhẹ thổi trên trời. Đây là lời khuyên về sự kiên trì, tích lũy dần dần để đạt được thành công. Tránh hành động vội vàng, hãy giữ sự ổn định."
+            }],
+            ["THIÊN TRẠCH LÝ", { 
+                soThuTu: 10, 
+                yNghia: "Cẩn trọng, bước đi", 
+                tho: "Đạo trời, thấp dưới cao trên\nSửa mình cho đúng ắt nên người hiền.", 
+                giaiThich: "Quẻ Thiên Trạch Lý biểu thị sự cẩn trọng trong hành động, như đi trên mặt đầm mỏng manh dưới trời cao. Đây là lời khuyên về việc giữ đạo đức, hành động đúng đắn và cẩn thận để tránh sai lầm."
+            }],
+            ["ĐỊA THIÊN THÁI", { 
+                soThuTu: 11, 
+                yNghia: "Thái bình, thông suốt", 
+                tho: "Thái hòa mọi vật sinh sôi\nGiáng khí đất, thăng khí trời Càn Khôn.", 
+                giaiThich: "Quẻ Địa Thiên Thái biểu thị sự thái bình, thông suốt, như đất và trời giao hòa. Đây là quẻ tốt, báo hiệu thời kỳ thịnh vượng, mọi việc thuận lợi. Hãy tận dụng thời cơ để phát triển và lan tỏa điều tốt đẹp."
+            }],
+            ["THIÊN ĐỊA BỈ", { 
+                soThuTu: 12, 
+                yNghia: "Bế tắc, đình trệ", 
+                tho: "Trời đất bất trắc, bất hòa\nNắm ngay cơ hội vượt qua thời này.", 
+                giaiThich: "Quẻ Thiên Địa Bĩ biểu thị sự bế tắc, như trời và đất không giao hòa. Đây là thời điểm khó khăn, cần kiên nhẫn và tìm cơ hội để vượt qua. Hãy giữ vững niềm tin và hành động đúng thời điểm."
+            }],
+            ["THIÊN HỎA ĐỒNG NHÂN", { 
+                soThuTu: 13, 
+                yNghia: "Đồng lòng, hợp tác", 
+                tho: "Lửa sáng, trời sáng chung lòng\nTrung trinh, chính nghĩa cộng đồng mới đông.", 
+                giaiThich: "Quẻ Thiên Hỏa Đồng Nhân biểu thị sự hợp tác, như lửa và trời cùng chiếu sáng. Đây là quẻ khuyến khích sự đoàn kết, làm việc vì lợi ích chung. Hãy giữ tâm trung thực và chính nghĩa để thu hút sự ủng hộ."
+            }],
+            ["HỎA THIÊN ĐẠI HỮU", { 
+                soThuTu: 14, 
+                yNghia: "Sở hữu lớn", 
+                tho: "Lửa trời chiếu sáng nơi nơi\nCủa quý nhất đời hạnh phúc, văn minh.", 
+                giaiThich: "Quẻ Hỏa Thiên Đại Hữu biểu thị sự sở hữu lớn, như lửa trên trời chiếu sáng mọi nơi. Đây là quẻ tốt, báo hiệu sự thành công, thịnh vượng và hạnh phúc. Hãy sử dụng tài sản và thành tựu để làm điều tốt đẹp."
+            }],
+            ["ĐỊA SƠN KHIÊM", { 
+                soThuTu: 15, 
+                yNghia: "Khiêm tốn, nhún nhường", 
+                tho: "Núi dưới đất thấp, càng cao\nĐạo trời đất dẫn ta vào với Khiêm.", 
+                giaiThich: "Quẻ Địa Sơn Khiêm biểu thị sự khiêm tốn, như núi nằm dưới đất. Đây là lời khuyên về việc giữ thái độ nhún nhường, không kiêu ngạo, để đạt được sự tôn trọng và thành công lâu dài."
+            }],
+            ["LÔI ĐỊA DỰ", { 
+                soThuTu: 16, 
+                yNghia: "Vui vẻ, chuẩn bị", 
+                tho: "Sấm vang dậy đất vui mừng\nGiữ mình, vô độ thì đừng, sáng khôn.", 
+                giaiThich: "Quẻ Lôi Địa Dự biểu thị sự vui vẻ và chuẩn bị, như sấm vang trên đất. Đây là thời điểm thuận lợi để chuẩn bị cho những kế hoạch lớn. Hãy giữ tâm trạng lạc quan nhưng tránh phóng túng."
+            }],
+            ["TRẠCH LÔI TÙY", { 
+                soThuTu: 17, 
+                yNghia: "Tùy tùng, thích ứng", 
+                tho: "Sấm trong đầm sóng vui rung\nCùng theo chính đạo thì cùng hanh thông.", 
+                giaiThich: "Quẻ Trạch Lôi Tùy biểu thị sự thích ứng, như sấm vang trong đầm. Đây là lời khuyên về việc linh hoạt, biết theo đúng người và đúng đạo để đạt được thành công. Hãy giữ tâm chính trực."
+            }],
+            ["SƠN PHONG CỔ", { 
+                soThuTu: 18, 
+                yNghia: "Sửa chữa, đổi mới", 
+                tho: "Núi ngăn gió có việc rồi\nSửa mình chân chính xứng người sáng khôn.", 
+                giaiThich: "Quẻ Sơn Phong Cổ biểu thị sự sửa chữa, như núi ngăn gió để làm mới. Đây là thời điểm cần sửa đổi những sai lầm, làm mới bản thân và môi trường xung quanh. Hãy hành động chân chính."
+            }],
+            ["ĐỊA TRẠCH LÂM", { 
+                soThuTu: 19, 
+                yNghia: "Đến gần, phát triển", 
+                tho: "Đất trên đầm đến với nuôi\nNuôi là đạo lớn nhất đời người theo.", 
+                giaiThich: "Quẻ Địa Trạch Lâm biểu thị sự phát triển, như đất đến gần đầm để nuôi dưỡng. Đây là quẻ tốt, báo hiệu sự tiến triển và thành công. Hãy tận dụng thời cơ để phát triển và giúp đỡ người khác."
+            }],
+            ["PHONG ĐỊA QUAN", { 
+                soThuTu: 20, 
+                yNghia: "Quan sát, xem xét", 
+                tho: "Gió trên đất tất theo phương\nGió có mắt dắt dẫn đường mát thơm.", 
+                giaiThich: "Quẻ Phong Địa Quan biểu thị sự quan sát, như gió thổi trên đất. Đây là lời khuyên về việc nhìn nhận, học hỏi và dẫn dắt người khác bằng tấm gương sáng. Hãy giữ tâm trong sạch và sáng suốt."
+            }],
+            ["HỎA LÔI PHỆ HẠP", { 
+                soThuTu: 21, 
+                yNghia: "Gặp trở ngại, cần vượt qua", 
+                tho: "Trừ ngăn cách, sạch gian tà\nLửa trên đầu sấm hợp hòa sáng vang.", 
+                giaiThich: "Quẻ Hỏa Lôi Phệ Hạp biểu thị sự vượt qua trở ngại, như lửa và sấm hợp sức. Đây là thời điểm cần quyết đoán, loại bỏ những cản trở để tiến lên. Hãy hành động mạnh mẽ và công bằng."
+            }],
+            ["SƠN HỎA BÍ", { 
+                soThuTu: 22, 
+                yNghia: "Trang sức, vẻ đẹp bề ngoài", 
+                tho: "Lửa làm cho núi sáng hơn\nĐiểm trang lợi ít, lòng son lợi nhiều.", 
+                giaiThich: "Quẻ Sơn Hỏa Bí biểu thị vẻ đẹp bề ngoài, như lửa làm sáng núi. Đây là lời khuyên về việc chú trọng vẻ đẹp nội tâm hơn là hình thức bên ngoài. Hãy giữ tâm chân thành để đạt được thành công thực sự."
+            }],
+            ["SƠN ĐỊA BÁC", { 
+                soThuTu: 23, 
+                yNghia: "Bóc lột, suy tàn", 
+                tho: "Núi trên đất tất tiêu điều\nKhi trên nền yếu, khi kiêu căng đời.", 
+                giaiThich: "Quẻ Sơn Địa Bác biểu thị sự suy tàn, như núi trên đất không vững. Đây là thời điểm cần cẩn trọng, tránh kiêu ngạo và xây dựng nền tảng vững chắc để tránh thất bại."
+            }],
+            ["ĐỊA LÔI PHỤC", { 
+                soThuTu: 24, 
+                yNghia: "Trở lại, phục hồi", 
+                tho: "Sấm trong đất tất vui hồi\nĐất nuôi mầm hạnh thành chồi mai xanh.", 
+                giaiThich: "Quẻ Địa Lôi Phục biểu thị sự phục hồi, như sấm vang trong đất báo hiệu mùa xuân. Đây là quẻ tốt, báo hiệu sự trở lại của những điều tốt đẹp. Hãy kiên nhẫn và chuẩn bị cho sự khởi sắc."
+            }],
+            ["THIÊN LÔI VÔ VỌNG", { 
+                soThuTu: 25, 
+                yNghia: "Vô tư, chân thật", 
+                tho: "Trời nổi sấm có thiên tai\nTrời cưng nhân đức, phạt ai làm càn.", 
+                giaiThich: "Quẻ Thiên Lôi Vô Vọng biểu thị sự chân thật, như sấm vang dưới trời. Đây là lời khuyên về việc sống ngay thẳng, không toan tính. Tránh hành động sai trái để không gặp tai họa."
+            }],
+            ["SƠN THIÊN ĐẠI SÚC", { 
+                soThuTu: 26, 
+                yNghia: "Tích lũy lớn", 
+                tho: "Núi chứa trời, chứa lớn lao\nTu nhân tích đức ắt cao cả thành.", 
+                giaiThich: "Quẻ Sơn Thiên Đại Súc biểu thị sự tích lũy lớn, như núi chứa trời. Đây là lời khuyên về việc tích lũy tri thức, đạo đức và tài năng để đạt được thành công lớn. Hãy kiên trì và chăm chỉ."
+            }],
+            ["SƠN LÔI DI", { 
+                soThuTu: 27, 
+                yNghia: "Nuôi dưỡng, cung cấp", 
+                tho: "Núi nuôi sấm động lòng mình\nNgười nuôi đức hạnh, nghĩa tình người minh.", 
+                giaiThich: "Quẻ Sơn Lôi Di biểu thị sự nuôi dưỡng, như núi nuôi sấm. Đây là lời khuyên về việc chăm sóc bản thân và người khác, cả về vật chất lẫn tinh thần. Hãy nuôi dưỡng đức hạnh để trở thành người sáng suốt."
+            }],
+            ["TRẠCH PHONG ĐẠI QUÁ", { 
+                soThuTu: 28, 
+                yNghia: "Quá tải, trách nhiệm nặng nề", 
+                tho: "Quá đáng giáng họa lẽ thường\nĐức cao, nhân cả phi thường làm nên.", 
+                giaiThich: "Quẻ Trạch Phong Đại Quá biểu thị sự quá tải, như đầm chịu sức gió lớn. Đây là thời điểm cần cẩn trọng, tránh tham lam và hành động vượt quá khả năng. Hãy giữ đức cao để vượt qua khó khăn."
+            }],
+            ["THUẦN KHẢM", { 
+                soThuTu: 29, 
+                yNghia: "Nước, hiểm trở", 
+                tho: "Nước hai lần hiểm cản tà\nHiền tài nhân đức vượt qua dễ dàng.", 
+                giaiThich: "Quẻ Thuần Khảm biểu thị sự hiểm nguy, như nước chảy xiết. Đây là quẻ nhắc nhở về việc đối mặt với khó khăn, nhưng nếu giữ tâm chính trực và nhân đức, bạn sẽ vượt qua một cách an toàn."
+            }],
+            ["THUẦN LI", { 
+                soThuTu: 30, 
+                yNghia: "Lửa, sáng suốt", 
+                tho: "Hai Li sáng quá hóa mờ\nChẳng ai thích kẻ hay phô trương nhiều.", 
+                giaiThich: "Quẻ Thuần Li biểu thị sự sáng suốt, như lửa rực rỡ. Tuy nhiên, nếu quá phô trương sẽ gây phản tác dụng. Đây là lời khuyên về việc giữ sự khiêm tốn, sử dụng trí tuệ một cách đúng đắn."
+            }],
+            ["TRẠCH SƠN HÀM", { 
+                soThuTu: 31, 
+                yNghia: "Cảm ứng, giao tiếp", 
+                tho: "Đầm trên đầu núi thơ nhiều\nTình yêu cao thượng, tình yêu lâu dài.", 
+                giaiThich: "Quẻ Trạch Sơn Hàm biểu thị sự cảm ứng, như đầm và núi giao hòa. Đây là quẻ tốt cho tình cảm, khuyến khích sự chân thành và giao tiếp sâu sắc để xây dựng mối quan hệ bền vững."
+            }],
+            ["LÔI PHONG HẰNG", { 
+                soThuTu: 32, 
+                yNghia: "Bền bỉ, kiên trì", 
+                tho: "Vĩnh hằng sấm có gió trong\nVĩnh hằng tình vợ, nghĩa chồng trời xe.", 
+                giaiThich: "Quẻ Lôi Phong Hằng biểu thị sự bền bỉ, như sấm và gió hỗ trợ nhau. Đây là quẻ tốt cho sự ổn định, khuyến khích sự kiên định trong tình cảm và công việc. Hãy giữ vững cam kết để thành công."
+            }],
+            ["THIÊN SƠN ĐỘN", { 
+                soThuTu: 33, 
+                yNghia: "Rút lui, ẩn dật", 
+                tho: "Núi khiêm núi trốn trong trời\nGiữ mình vững chãi thì đời núi cao.", 
+                giaiThich: "Quẻ Thiên Sơn Độn biểu thị sự rút lui, như núi ẩn dưới trời. Đây là lời khuyên về việc tạm thời tránh xa tranh chấp, giữ mình trong sạch để bảo toàn lực lượng và chờ thời cơ."
+            }],
+            ["LÔI THIÊN ĐẠI TRÁNG", { 
+                soThuTu: 34, 
+                yNghia: "Mạnh mẽ, quyết đoán", 
+                tho: "Sấm trên trời vọng xa xôi\nLớn mạnh tránh ác thì đời hanh thông.", 
+                giaiThich: "Quẻ Lôi Thiên Đại Tráng biểu thị sự mạnh mẽ, như sấm vang trên trời. Đây là thời điểm thuận lợi để hành động quyết đoán, nhưng cần tránh làm điều ác để giữ được sự hanh thông."
+            }],
+            ["HỎA ĐỊA TẤN", { 
+                soThuTu: 35, 
+                yNghia: "Tiến lên, phát triển", 
+                tho: "Lửa trên đất tất sáng ngời\nĐức nhân tiến có mặt trời tâm soi.", 
+                giaiThich: "Quẻ Hỏa Địa Tấn biểu thị sự tiến lên, như lửa chiếu sáng trên đất. Đây là quẻ tốt, báo hiệu sự phát triển và thành công. Hãy giữ tâm sáng và hành động nhân đức để tiến xa."
+            }],
+            ["ĐỊA HỎA MINH DI", { 
+                soThuTu: 36, 
+                yNghia: "Tối tăm, ẩn mình", 
+                tho: "Lửa trong đất tất tối đi\nGiữ cho tâm sáng, Minh Di sá gì.", 
+                giaiThich: "Quẻ Địa Hỏa Minh Di biểu thị sự tối tăm, như lửa bị đất che khuất. Đây là thời điểm cần ẩn mình, giữ tâm sáng và tránh phô trương để bảo vệ bản thân trước khó khăn."
+            }],
+            ["PHONG HỎA GIA NHÂN", { 
+                soThuTu: 37, 
+                yNghia: "Gia đình, trật tự", 
+                tho: "Lửa có gió tựa, người nhà\nNên lửa cháy lớn sáng lòa không gian.", 
+                giaiThich: "Quẻ Phong Hỏa Gia Nhân biểu thị sự hòa thuận trong gia đình, như gió giúp lửa cháy sáng. Đây là quẻ tốt, khuyến khích sự trật tự và yêu thương trong gia đình để đạt được hạnh phúc."
+            }],
+            ["HỎA TRẠCH KHUÊ", { 
+                soThuTu: 38, 
+                yNghia: "Đối lập, xung đột", 
+                tho: "Đầm dưới lửa tựa vào nhau\nChị em đối đầu nhưng vẫn chị em.", 
+                giaiThich: "Quẻ Hỏa Trạch Khuê biểu thị sự đối lập, như lửa và đầm không hòa hợp. Đây là thời điểm có mâu thuẫn, nhưng cần giữ tình thân và tìm cách hòa giải để vượt qua."
+            }],
+            ["THỦY SƠN KIỂN", { 
+                soThuTu: 39, 
+                yNghia: "Trở ngại, khó khăn", 
+                tho: "Núi sau nước trước gian nan\nVượt qua khi đủ bền gan, đức tài.", 
+                giaiThich: "Quẻ Thủy Sơn Kiển biểu thị sự khó khăn, như nước chảy trước núi. Đây là thời điểm cần kiên nhẫn, bền bỉ và sử dụng trí tuệ để vượt qua trở ngại. Hãy giữ vững đạo đức."
+            }],
+            ["LÔI THỦY GIẢI", { 
+                soThuTu: 40, 
+                yNghia: "Giải tỏa, cởi bỏ", 
+                tho: "Sấm trên nước được giải nguy\nNguy tan, chăm sóc dân vì ấm no.", 
+                giaiThich: "Quẻ Lôi Thủy Giải biểu thị sự giải tỏa, như sấm làm tan nguy hiểm trên nước. Đây là quẻ tốt, báo hiệu sự kết thúc khó khăn. Hãy tận dụng thời cơ để chăm sóc và xây dựng lại."
+            }],
+            ["SƠN TRẠCH TỔN", { 
+                soThuTu: 41, 
+                yNghia: "Giảm bớt, tổn thất", 
+                tho: "Đất đầm tổn đắp núi cao\nGiảm đi tính xấu khác nào tốt tăng.", 
+                giaiThich: "Quẻ Sơn Trạch Tổn biểu thị sự giảm bớt, như đầm làm tổn đất để đắp núi. Đây là lời khuyên về việc hy sinh những điều không cần thiết để đạt được điều lớn lao hơn. Hãy bỏ bớt cái xấu để tăng cái tốt."
+            }],
+            ["PHONG LÔI ÍCH", { 
+                soThuTu: 42, 
+                yNghia: "Tăng trưởng, lợi ích", 
+                tho: "Sấm gió giúp ích cho nhau\nCao ham giúp thấp, cao mau hơn nhiều.", 
+                giaiThich: "Quẻ Phong Lôi Ích biểu thị sự tăng trưởng, như sấm và gió hỗ trợ nhau. Đây là quẻ tốt, khuyến khích sự giúp đỡ lẫn nhau để cùng phát triển. Hãy hành động vì lợi ích chung."
+            }],
+            ["TRẠCH THIÊN QUẢI", { 
+                soThuTu: 43, 
+                yNghia: "Quyết đoán, dứt khoát", 
+                tho: "Đầm trời vỡ mọi đê ngăn\nKiên tâm tiến dưới trời dân tất thành.", 
+                giaiThich: "Quẻ Trạch Thiên Quải biểu thị sự quyết đoán, như đầm phá vỡ đê dưới trời. Đây là thời điểm cần hành động mạnh mẽ, dứt khoát để loại bỏ trở ngại. Hãy giữ tâm kiên định để thành công."
+            }],
+            ["THIÊN PHONG CẤU", { 
+                soThuTu: 44, 
+                yNghia: "Gặp gỡ bất ngờ", 
+                tho: "Gió kết trời thổi mọi phương\nDưới trên liên kết tỏa hương thơm đời.", 
+                giaiThich: "Quẻ Thiên Phong Cấu biểu thị sự gặp gỡ bất ngờ, như gió thổi dưới trời. Đây là quẻ nhắc nhở về việc cẩn trọng với những mối quan hệ mới, nhưng nếu biết tận dụng, sẽ mang lại điều tốt đẹp."
+            }],
+            ["TRẠCH ĐỊA TỤY", { 
+                soThuTu: 45, 
+                yNghia: "Tụ họp, đoàn tụ", 
+                tho: "Đầm trên đất tụ vui hòa\nCó hương thơm ngát của hoa sen đời.", 
+                giaiThich: "Quẻ Trạch Địa Tụy biểu thị sự đoàn tụ, như đầm trên đất tạo nên vẻ đẹp. Đây là quẻ tốt, báo hiệu sự tụ họp vui vẻ và hòa hợp. Hãy trân trọng những mối quan hệ và cơ hội hợp tác."
+            }],
+            ["ĐỊA PHONG THĂNG", { 
+                soThuTu: 46, 
+                yNghia: "Đi lên, thăng tiến", 
+                tho: "Đất trên gió có thăng thiên\nNgày ngày tích đức, người hiền ắt nên.", 
+                giaiThich: "Quẻ Địa Phong Thăng biểu thị sự thăng tiến, như gió nâng đất lên cao. Đây là quẻ tốt, báo hiệu sự phát triển và thành công. Hãy tiếp tục tích đức và làm việc chăm chỉ để tiến xa."
+            }],
+            ["TRẠCH THỦY KHỐN", { 
+                soThuTu: 47, 
+                yNghia: "Khốn đốn, khó khăn", 
+                tho: "Nước dưới đầm có khốn nguy\nTrung trinh vui vẻ sá gì không qua.", 
+                giaiThich: "Quẻ Trạch Thủy Khốn biểu thị sự khó khăn, như nước bị đầm vây hãm. Đây là thời điểm thử thách, nhưng nếu giữ tâm trung trinh và lạc quan, bạn sẽ vượt qua. Hãy kiên nhẫn và giữ vững niềm tin."
+            }],
+            ["THỦY PHONG TỈNH", { 
+                soThuTu: 48, 
+                yNghia: "Giếng nước, nguồn nuôi dưỡng", 
+                tho: "Nước nguồn trời đất, gàu phong\nGiếng lòng đầy ngọc, miệng không nói gì.", 
+                giaiThich: "Quẻ Thủy Phong Tỉnh biểu thị nguồn nuôi dưỡng, như giếng nước trong lành. Đây là quẻ nhắc nhở về việc giữ gìn nguồn lực và chia sẻ với người khác. Hãy làm việc vì lợi ích cộng đồng."
+            }],
+            ["TRẠCH HỎA CÁCH", { 
+                soThuTu: 49, 
+                yNghia: "Thay đổi, cách tân", 
+                tho: "Đầm trên lửa chứa đổi thay\nSáng ngời, vui thuận ắt xây mới thành.", 
+                giaiThich: "Quẻ Trạch Hỏa Cách biểu thị sự thay đổi, như lửa làm sôi nước trong đầm. Đây là thời điểm cần cải cách, thay đổi để tiến bộ. Hãy hành động sáng suốt và thuận theo ý dân để thành công."
+            }],
+            ["HỎA PHONG ĐỈNH", { 
+                soThuTu: 50, 
+                yNghia: "Đỉnh, sự nghiệp vững chắc", 
+                tho: "Lửa có gió, đỉnh sôi liền\nĐức, nhân, hòa, sáng đại hiền chăm dân.", 
+                giaiThich: "Quẻ Hỏa Phong Đỉnh biểu thị sự vững chắc, như cái đỉnh được lửa và gió hỗ trợ. Đây là quẻ tốt, báo hiệu sự nghiệp thành công và ổn định. Hãy giữ đức hạnh và chăm lo cho người khác."
+            }],
+            ["THUẦN CHẤN", { 
+                soThuTu: 51, 
+                yNghia: "Sấm, hành động", 
+                tho: "Sấm sấm chấn động đất trời\nDũng nhân trí giữ, có cười sấm qua.", 
+                giaiThich: "Quẻ Thuần Chấn biểu thị sự hành động, như sấm vang chấn động. Đây là thời điểm cần dũng cảm, quyết đoán để tạo ra thay đổi. Hãy giữ tâm trí sáng suốt để vượt qua thử thách."
+            }],
+            ["THUẦN CẤN", { 
+                soThuTu: 52, 
+                yNghia: "Núi, tĩnh tại", 
+                tho: "Núi chồng núi mới to cao\nTrong lòng ngọc tĩnh, ngăn bao bạo tàn.", 
+                giaiThich: "Quẻ Thuần Cấn biểu thị sự tĩnh tại, như núi đứng vững. Đây là lời khuyên về việc giữ tâm bình thản, tập trung vào nội tâm để tránh bị ảnh hưởng bởi những biến động bên ngoài."
+            }],
+            ["PHONG SƠN TIỆM", { 
+                soThuTu: 53, 
+                yNghia: "Tiến dần, tuần tự", 
+                tho: "Cây trên núi từ từ cao\nNgày ngày tích đức như bao người hiền.", 
+                giaiThich: "Quẻ Phong Sơn Tiệm biểu thị sự tiến triển dần dần, như cây mọc trên núi. Đây là quẻ khuyến khích sự kiên trì, làm việc tuần tự để đạt được thành công lâu dài. Hãy giữ vững đạo đức."
+            }],
+            ["LÔI TRẠCH QUY MUỘI", { 
+                soThuTu: 54, 
+                yNghia: "Cô gái về nhà chồng", 
+                tho: "Thương em gái nhỏ vu quy\nVề với sấm sét lấy gì giữ vui.", 
+                giaiThich: "Quẻ Lôi Trạch Quy Muội biểu thị sự kết hôn không thuận, như cô gái trẻ về nhà chồng gặp sấm sét. Đây là lời cảnh báo về việc cẩn trọng trong các mối quan hệ, tránh vội vàng để không gặp bất lợi."
+            }],
+            ["LÔI HỎA PHONG", { 
+                soThuTu: 55, 
+                yNghia: "Sung mãn, thịnh vượng", 
+                tho: "Sấm động, lửa sáng gặp nhau\nTất nhiên thịnh lớn, chẳng cầu mà nên.", 
+                giaiThich: "Quẻ Lôi Hỏa Phong biểu thị sự thịnh vượng, như sấm và lửa cùng sáng. Đây là quẻ tốt, báo hiệu thời kỳ sung mãn. Tuy nhiên, cần cẩn trọng vì thịnh cực thì suy, hãy chuẩn bị cho tương lai."
+            }],
+            ["HỎA SƠN LỮ", { 
+                soThuTu: 56, 
+                yNghia: "Khách, lữ hành", 
+                tho: "Lửa trên núi, lửa ở nhờ\nGiữ mình cho sáng và thờ cao sơn.", 
+                giaiThich: "Quẻ Hỏa Sơn Lữ biểu thị sự lữ hành, như lửa cháy trên núi. Đây là thời điểm bạn ở vị trí khách, cần giữ tâm sáng và hành động đúng mực để được đón nhận và bảo vệ."
+            }],
+            ["THUẦN TỐN", { 
+                soThuTu: 57, 
+                yNghia: "Gió, nhu thuận", 
+                tho: "Gió gió hòa nhập mạnh lên\nChớ gây bão tố mà nên mát lành.", 
+                giaiThich: "Quẻ Thuần Tốn biểu thị sự nhu thuận, như gió nhẹ thổi. Đây là lời khuyên về việc hành động mềm dẻo, linh hoạt để đạt được mục tiêu. Tránh gây xung đột, hãy giữ sự hòa nhã."
+            }],
+            ["THUẦN ĐOÀI", { 
+                soThuTu: 58, 
+                yNghia: "Đầm, vui vẻ", 
+                tho: "Đoài toàn xinh đẹp, vui tươi\nNuôi hoa sen nở soi đời gương hương.", 
+                giaiThich: "Quẻ Thuần Đoài biểu thị sự vui vẻ, như đầm nước trong lành. Đây là quẻ tốt, báo hiệu niềm vui và sự hòa hợp. Hãy lan tỏa niềm vui và giữ tâm trong sáng để thu hút điều tốt đẹp."
+            }],
+            ["PHONG THỦY HOÁN", { 
+                soThuTu: 59, 
+                yNghia: "Phân tán, ly tán", 
+                tho: "Nước dưới gió có sóng lan\nPhân ra, thuyền Tốn vượt ngàn hiểm nguy.", 
+                giaiThich: "Quẻ Phong Thủy Hoán biểu thị sự phân tán, như gió làm sóng nước lan xa. Đây là thời điểm cần cẩn trọng với sự chia rẽ, nhưng nếu biết tận dụng, có thể vượt qua khó khăn để tiến lên."
+            }],
+            ["THỦY TRẠCH TIẾT", { 
+                soThuTu: 60, 
+                yNghia: "Tiết chế, giới hạn", 
+                tho: "Tiết chế lượng nước trong đầm\nThì sen mới nở hàng năm cho đời.", 
+                giaiThich: "Quẻ Thủy Trạch Tiết biểu thị sự tiết chế, như nước trong đầm được kiểm soát. Đây là lời khuyên về việc đặt giới hạn, không làm quá mức để giữ sự cân bằng và bền vững."
+            }],
+            ["PHONG TRẠCH TRUNG PHU", { 
+                soThuTu: 61, 
+                yNghia: "Trung thực, thành tín", 
+                tho: "Trên đầm gió có đức tin\nHoa sen nở, gió đưa nghìn trùng thơm.", 
+                giaiThich: "Quẻ Phong Trạch Trung Phu biểu thị sự trung thực, như gió thổi trên đầm làm hoa sen tỏa hương. Đây là quẻ khuyến khích sự thành tín, giữ lời hứa để xây dựng lòng tin và thành công."
+            }],
+            ["LÔI SƠN TIỂU QUÁ", { 
+                soThuTu: 62, 
+                yNghia: "Quá nhỏ, sai lệch nhỏ", 
+                tho: "Sấm trên đầu núi, thấp hèn\nHam danh tiếng hảo, nhỏ nhen đen đời.", 
+                giaiThich: "Quẻ Lôi Sơn Tiểu Quá biểu thị sự sai lệch nhỏ, như sấm vang trên núi thấp. Đây là lời cảnh báo về việc tránh tham lam danh tiếng, hãy giữ tâm khiêm tốn và hành động đúng mực."
+            }],
+            ["THỦY HỎA KÝ TẾ", { 
+                soThuTu: 63, 
+                yNghia: "Đã hoàn thành, thành công", 
+                tho: "Nước trên lửa tựa nhau thành\nGiao hòa lửa nước nên hành tinh xanh.", 
+                giaiThich: "Quẻ Thủy Hỏa Ký Tế biểu thị sự hoàn thành, như nước và lửa giao hòa. Đây là quẻ tốt, báo hiệu sự thành công. Tuy nhiên, cần cẩn trọng vì sau khi hoàn thành, dễ sinh ra lơ là."
+            }],
+            ["HỎA THỦY VỊ TẾ", { 
+                soThuTu: 64, 
+                yNghia: "Chưa hoàn thành, còn dang dở", 
+                tho: "Lửa trên nước rước việc đời\nTrong trời đất cứ luân hồi hóa sinh.", 
+                giaiThich: "Quẻ Hỏa Thủy Vị Tế biểu thị sự chưa hoàn thành, như lửa và nước chưa hòa hợp. Đây là quẻ nhắc nhở về việc cần tiếp tục nỗ lực, cẩn trọng để hoàn thành công việc còn dang dở."
+            }]
+        ]);
+
+        const drawButton = document.getElementById("drawButton");
+        const card = document.getElementById("card");
+        const hexagramName = document.getElementById("hexagramName");
+        const hexagramOrder = document.getElementById("hexagramOrder");
+        const hexagramMeaning = document.getElementById("hexagramMeaning");
+        const hexagramPoem = document.getElementById("hexagramPoem");
+        const hexagramDetail = document.getElementById("hexagramDetail");
+        const timerDisplay = document.getElementById("timer");
+
+        const COOLDOWN_TIME = 1 * 60 * 1000; // 10 phút (tính bằng mili giây)
+        let lastDrawTime = localStorage.getItem("lastDrawTime") ? parseInt(localStorage.getItem("lastDrawTime")) : 0;
+
+        function updateTimer() {
+            const currentTime = Date.now();
+            const timeSinceLastDraw = currentTime - lastDrawTime;
+            const timeRemaining = COOLDOWN_TIME - timeSinceLastDraw;
+
+            if (timeRemaining > 0) {
+                drawButton.disabled = true;
+                const minutes = Math.floor(timeRemaining / (60 * 1000));
+                const seconds = Math.floor((timeRemaining % (60 * 1000)) / 1000);
+                timerDisplay.innerText = `Còn ${minutes} phút ${seconds} giây để rút bài tiếp theo`;
+            } else {
+                drawButton.disabled = false;
+                timerDisplay.innerText = "Bạn có thể rút bài!";
+            }
+        }
+
+        function drawCard() {
+            const currentTime = Date.now();
+            const timeSinceLastDraw = currentTime - lastDrawTime;
+
+            if (timeSinceLastDraw < COOLDOWN_TIME) {
+                return; // Không cho rút nếu chưa đủ 10 phút
+            }
+
+            // Lật lại bài về mặt trước trước khi rút
+            if (card.classList.contains("flipped")) {
+                card.classList.remove("flipped");
+            }
+
+            setTimeout(() => {
+                // Rút bài ngẫu nhiên
+                const hexagrams = Array.from(giaiThichQue.keys());
+                const randomHexagram = hexagrams[Math.floor(Math.random() * hexagrams.length)];
+                const hexagramData = giaiThichQue.get(randomHexagram);
+
+                // Cập nhật nội dung lá bài
+                hexagramName.innerText = randomHexagram;
+                hexagramOrder.innerText = `Số thứ tự: ${hexagramData.soThuTu}`;
+                hexagramMeaning.innerText = `Ý nghĩa: ${hexagramData.yNghia}`;
+                hexagramPoem.innerText = hexagramData.tho;
+                hexagramDetail.innerText = `Giải thích: ${hexagramData.giaiThich}`;
+
+                // Lật bài
+                card.classList.add("flipped");
+
+                // Lưu thời gian rút bài
+                lastDrawTime = Date.now();
+                localStorage.setItem("lastDrawTime", lastDrawTime);
+                updateTimer();
+            }, 800); // Đợi hiệu ứng lật bài hoàn tất
+        }
+
+        // Cập nhật đồng hồ đếm ngược mỗi giây
+        setInterval(updateTimer, 1000);
+        updateTimer(); // Cập nhật ngay khi tải trang
+    </script>
 </body>
 </html>

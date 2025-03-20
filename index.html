@@ -118,12 +118,49 @@
             color: #7f8c8d;
             margin-top: 10px;
         }
+        /* CSS cho phần nhập câu hỏi */
+        .question-container {
+            margin: 20px 0;
+            width: 100%;
+            max-width: 500px;
+        }
+        .question-container textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            resize: none;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .question-container button {
+            background: #3498db;
+        }
+        .question-container button:hover:not(:disabled) {
+            background: #2980b9;
+        }
+        .question-display {
+            margin-top: 10px;
+            font-size: 1.1em;
+            color: #2c3e50;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
     <h1>Rút Bài Xem Quẻ Kinh Dịch</h1>
-    <div class="warning">Hãy suy nghĩ đặt câu hỏi kỹ khi rút bài, kết quả chỉ tính lá đầu tiên rút. </div>
-    <div class="warning">Tránh các câu hỏi mang tính trắc nghiệm (Có, không) </div>
+    <div class="warning">Hãy suy nghĩ đặt câu hỏi kỹ khi rút bài, kết quả chỉ tính lá đầu tiên rút.</div>
+    <div class="warning">Tránh các câu hỏi mang tính trắc nghiệm (Có, không)</div>
+
+    <!-- Phần nhập câu hỏi -->
+    <div class="question-container">
+        <textarea id="questionInput" placeholder="Nhập câu hỏi của bạn tại đây..."></textarea>
+        <button id="submitQuestionButton" onclick="submitQuestion()">Xác nhận câu hỏi</button>
+        <div class="question-display" id="questionDisplay"></div>
+    </div>
+
     <div class="card-container">
         <div class="card" id="card">
             <div class="card-front">Rút Bài</div>
@@ -136,7 +173,7 @@
             </div>
         </div>
     </div>
-    <button id="drawButton" onclick="drawCard()">Rút Bài</button>
+    <button id="drawButton" onclick="drawCard()" disabled>Rút Bài</button>
     <div class="timer" id="timer">---</div>
 
     <script>
@@ -525,8 +562,7 @@
         giaiThich: "Quẻ Hỏa Thủy Vị Tế biểu thị sự chưa hoàn thành, như lửa và nước chưa hòa hợp. Đây là quẻ nhắc nhở về việc cần tiếp tục nỗ lực, cẩn trọng để hoàn thành công việc còn dang dở. \n\n**Thoán từ**: 'Vị Tế: Hanh. Tiểu hồ thiệp đại xuyên.' - Thông suốt, cáo nhỏ vượt sông lớn, thành công. \n\n**Hào từ**: \n1. Sơ Lục: 'Nhu kỳ vĩ' - Ướt đuôi, vội vàng gặp hung. \n2. Cửu Nhị: 'Du kỳ luân' - Kéo bánh xe, kiên trì, cát. \n3. Lục Tam: 'Vị tế chinh hung' - Chưa xong mà đi xa thì xấu, cần chuẩn bị. \n4. Cửu Tứ: 'Trinh cát hối vong' - Kiên trì tốt, không hối tiếc, đánh địch thắng. \n5. Lục Ngũ: 'Trinh cát vô hối' - Kiên trì tốt, không hối tiếc, sáng tỏ như君子. \n6. Thượng Cửu: 'Hữu phu ư ẩm tửu' - Thành tín uống rượu, không lỗi, nhưng ướt đầu thì mất."
     }]
 ]);
-
-        const drawButton = document.getElementById("drawButton");
+const drawButton = document.getElementById("drawButton");
         const card = document.getElementById("card");
         const hexagramName = document.getElementById("hexagramName");
         const hexagramOrder = document.getElementById("hexagramOrder");
@@ -534,9 +570,14 @@
         const hexagramPoem = document.getElementById("hexagramPoem");
         const hexagramDetail = document.getElementById("hexagramDetail");
         const timerDisplay = document.getElementById("timer");
+        const questionInput = document.getElementById("questionInput");
+        const submitQuestionButton = document.getElementById("submitQuestionButton");
+        const questionDisplay = document.getElementById("questionDisplay");
 
-        const COOLDOWN_TIME = 1 * 60 * 1000; // 10 phút (tính bằng mili giây)
+        const COOLDOWN_TIME = 1 * 60 * 1000; // 1 phút (để test nhanh, bạn có thể đổi lại 10 phút)
         let lastDrawTime = localStorage.getItem("lastDrawTime") ? parseInt(localStorage.getItem("lastDrawTime")) : 0;
+        let hasQuestion = false; // Biến để kiểm tra xem đã nhập câu hỏi chưa
+        let isFirstDraw = true; // Biến để kiểm tra lần rút đầu tiên
 
         function updateTimer() {
             const currentTime = Date.now();
@@ -548,10 +589,28 @@
                 const minutes = Math.floor(timeRemaining / (60 * 1000));
                 const seconds = Math.floor((timeRemaining % (60 * 1000)) / 1000);
                 timerDisplay.innerText = `Còn ${minutes} phút ${seconds} giây để rút bài tiếp theo`;
+            } else if (!hasQuestion) {
+                drawButton.disabled = true;
+                timerDisplay.innerText = "Vui lòng nhập và xác nhận câu hỏi trước khi rút bài!";
             } else {
                 drawButton.disabled = false;
                 timerDisplay.innerText = "Bạn có thể rút bài!";
             }
+        }
+
+        function submitQuestion() {
+            const question = questionInput.value.trim();
+            if (question === "") {
+                alert("Vui lòng nhập câu hỏi trước khi xác nhận!");
+                return;
+            }
+
+            // Hiển thị câu hỏi đã nhập
+            questionDisplay.innerText = `Câu hỏi của bạn: ${question}`;
+            hasQuestion = true;
+            questionInput.disabled = true; // Vô hiệu hóa textarea sau khi xác nhận
+            submitQuestionButton.disabled = true; // Vô hiệu hóa nút xác nhận
+            updateTimer(); // Cập nhật lại trạng thái nút rút bài
         }
 
         function drawCard() {
@@ -559,8 +618,23 @@
             const timeSinceLastDraw = currentTime - lastDrawTime;
 
             if (timeSinceLastDraw < COOLDOWN_TIME) {
-                return; // Không cho rút nếu chưa đủ 10 phút
+                return; // Không cho rút nếu chưa đủ thời gian
             }
+
+            if (!hasQuestion) {
+                alert("Vui lòng nhập và xác nhận câu hỏi trước khi rút bài!");
+                return;
+            }
+
+            // Nếu không phải lần rút đầu tiên, reset câu hỏi để nhập câu hỏi mới
+            if (!isFirstDraw) {
+                hasQuestion = false;
+                questionInput.value = "";
+                questionInput.disabled = false;
+                submitQuestionButton.disabled = false;
+                questionDisplay.innerText = "";
+            }
+            isFirstDraw = false; // Đánh dấu rằng đã rút ít nhất một lần
 
             // Lật lại bài về mặt trước trước khi rút
             if (card.classList.contains("flipped")) {
